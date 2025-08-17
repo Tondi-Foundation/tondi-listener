@@ -1,0 +1,29 @@
+[package]
+name = "xscan-h2s"
+
+description = "xscan-h2s"
+edition     = { workspace = true }
+license     = { workspace = true }
+version     = { workspace = true }
+
+
+[lib]
+crate-type = ["cdylib", "rlib", "staticlib"]
+
+
+[features]
+
+
+[lints]
+workspace = true
+
+
+[dependencies]
+xscan-h2c = { workspace = true }
+xscan-lib = { workspace = true }
+
+nill      = { workspace = true }
+thiserror = { workspace = true }
+
+
+[build-dependencies]

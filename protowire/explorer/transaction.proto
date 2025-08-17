@@ -1,0 +1,6 @@
+syntax = "proto3";
+package explorer;
+
+message Transaction {
+  uint32 version = 2;
+}

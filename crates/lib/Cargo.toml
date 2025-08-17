@@ -1,0 +1,29 @@
+[package]
+name = "xscan-lib"
+
+description = "xscan-lib"
+edition     = { workspace = true }
+license     = { workspace = true }
+version     = { workspace = true }
+
+
+[lib]
+crate-type = ["cdylib", "rlib", "staticlib"]
+
+
+[features]
+default         = []
+mimalloc        = ["dep:mimalloc"]
+tracing-browser = ["dep:tracing-browser-subscriber"]
+
+
+[lints]
+workspace = true
+
+
+[dependencies]
+mimalloc                   = { workspace = true, optional = true }
+thiserror                  = { workspace = true }
+tracing                    = { workspace = true, features = ["attributes", "release_max_level_info"] }
+tracing-browser-subscriber = { workspace = true, optional = true }
+tracing-subscriber         = { workspace = true, features = ["ansi", "env-filter", "fmt", "smallvec", "std", "tracing-log"] }

@@ -1,0 +1,6 @@
+syntax = "proto3";
+package explorer;
+
+message Hash {
+  bytes value = 1;  // [u8;32]
+}

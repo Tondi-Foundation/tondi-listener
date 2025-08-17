@@ -1,0 +1,40 @@
+[package]
+name = "xscan-server"
+
+description = "xscan-server"
+edition     = { workspace = true }
+license     = { workspace = true }
+version     = { workspace = true }
+
+
+[features]
+default = []
+
+
+[lints]
+workspace = true
+
+
+[dependencies]
+xscan-db  = { workspace = true }
+xscan-h2c = { workspace = true, features = ["gzip", "router", "transport"] }
+xscan-h2s = { workspace = true }
+xscan-lib = { workspace = true, features = ["mimalloc"] }
+
+axum       = { workspace = true, features = ["http2", "json", "query", "tokio", "tracing", "ws"] }
+futures    = { workspace = true }
+nill       = { workspace = true }
+serde      = { workspace = true, features = ["derive"] }
+thiserror  = { workspace = true }
+tokio      = { workspace = true, features = ["macros", "net", "rt-multi-thread", "sync"] }
+tower      = { workspace = true, features = ["load-shed"] }
+tower-http = { workspace = true, features = ["cors", "timeout", "trace"] }
+
+tondi-grpc-client = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+tondi-grpc-core   = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+tondi-notify      = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+tondi-rpc-core    = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+tondi-utils       = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+
+
+[build-dependencies]

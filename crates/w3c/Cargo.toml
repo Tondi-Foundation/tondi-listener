@@ -1,0 +1,22 @@
+[package]
+name = "xscan-w3c"
+
+description = "xscan-w3c"
+edition     = { workspace = true }
+license     = { workspace = true }
+version     = { workspace = true }
+
+
+[features]
+default = []
+
+
+[lints]
+workspace = true
+
+
+[dependencies]
+xscan-lib = { workspace = true }
+
+
+[build-dependencies]

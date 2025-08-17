@@ -1,0 +1,37 @@
+[package]
+name = "xscan-h2c"
+
+description = "xscan-h2c"
+edition     = { workspace = true }
+license     = { workspace = true }
+version     = { workspace = true }
+
+
+[lib]
+crate-type = ["cdylib", "rlib", "staticlib"]
+
+
+[features]
+default    = ["rkyv-codec"]
+gzip       = ["tonic/gzip"]      # TODO: zstd(wasm)
+rkyv-codec = ["dep:rkyv"]
+router     = ["tonic/router"]
+transport  = ["tonic/transport"]
+
+
+[lints]
+workspace = true
+
+
+[dependencies]
+bytes     = { workspace = true }
+nill      = { workspace = true }
+prost     = { workspace = true, features = ["derive"] }
+rkyv      = { workspace = true, features = ["std", "unaligned"], optional = true }
+thiserror = { workspace = true }
+tonic     = { workspace = true, features = ["codegen"] }
+tonic-web = { workspace = true }
+
+
+[build-dependencies]
+tonic-prost-build = { workspace = true, features = ["cleanup-markdown"] }

@@ -1,0 +1,108 @@
+use serde::{Deserialize, Serialize};
+use tondi_grpc_core::{ops::TondidPayloadOps, protowire::TondidRequest};
+use tondi_rpc_core::*;
+
+// TODO: Make prost build Message Serialize/Deserialize
+// TODO: Use paste::paste!
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "op", content = "params")]
+pub enum GrpcCall {
+    Ping(PingRequest),
+    GetSyncStatus(GetSyncStatusRequest),
+    GetServerInfo(GetServerInfoRequest),
+    GetMetrics(GetMetricsRequest),
+    GetConnections(GetConnectionsRequest),
+    GetSystemInfo(GetSystemInfoRequest),
+    SubmitBlock(SubmitBlockRequest),
+    GetBlockTemplate(GetBlockTemplateRequest),
+    GetBlock(GetBlockRequest),
+    GetBlockStatus(GetBlockStatusRequest),
+    GetTransaction(GetTransactionRequest),
+    GetInfo(GetInfoRequest),
+    GetCurrentNetwork(GetCurrentNetworkRequest),
+    GetPeerAddresses(GetPeerAddressesRequest),
+    GetSink(GetSinkRequest),
+    GetMempoolEntry(GetMempoolEntryRequest),
+    GetMempoolEntries(GetMempoolEntriesRequest),
+    GetConnectedPeerInfo(GetConnectedPeerInfoRequest),
+    AddPeer(AddPeerRequest),
+    SubmitTransaction(SubmitTransactionRequest),
+    SubmitTransactionReplacement(SubmitTransactionReplacementRequest),
+    GetSubnetwork(GetSubnetworkRequest),
+    GetVirtualChainFromBlock(GetVirtualChainFromBlockRequest),
+    GetBlocks(GetBlocksRequest),
+    GetBlockCount(GetBlockCountRequest),
+    GetBlockDagInfo(GetBlockDagInfoRequest),
+    ResolveFinalityConflict(ResolveFinalityConflictRequest),
+    Shutdown(ShutdownRequest),
+    GetHeader(GetHeaderRequest),
+    GetHeaders(GetHeadersRequest),
+    GetUtxosByAddresses(GetUtxosByAddressesRequest),
+    GetBalanceByAddress(GetBalanceByAddressRequest),
+    GetBalancesByAddresses(GetBalancesByAddressesRequest),
+    GetSinkBlueScore(GetSinkBlueScoreRequest),
+    Ban(BanRequest),
+    Unban(UnbanRequest),
+    EstimateNetworkHashesPerSecond(EstimateNetworkHashesPerSecondRequest),
+    GetMempoolEntriesByAddresses(GetMempoolEntriesByAddressesRequest),
+    GetCoinSupply(GetCoinSupplyRequest),
+    GetDaaScoreTimestampEstimate(GetDaaScoreTimestampEstimateRequest),
+    GetFeeEstimate(GetFeeEstimateRequest),
+    GetFeeEstimateExperimental(GetFeeEstimateExperimentalRequest),
+    GetCurrentBlockColor(GetCurrentBlockColorRequest),
+    GetUtxoReturnAddress(GetUtxoReturnAddressRequest),
+}
+
+impl From<GrpcCall> for (TondidPayloadOps, TondidRequest) {
+    fn from(grpc_call: GrpcCall) -> Self {
+        use TondidPayloadOps::*;
+        match grpc_call {
+            GrpcCall::Ping(m) => (Ping, m.into()),
+            GrpcCall::GetSyncStatus(m) => (GetSyncStatus, m.into()),
+            GrpcCall::GetServerInfo(m) => (GetServerInfo, m.into()),
+            GrpcCall::GetMetrics(m) => (GetMetrics, m.into()),
+            GrpcCall::GetConnections(m) => (GetConnections, m.into()),
+            GrpcCall::GetSystemInfo(m) => (GetSystemInfo, m.into()),
+            GrpcCall::SubmitBlock(m) => (SubmitBlock, m.into()),
+            GrpcCall::GetBlockTemplate(m) => (GetBlockTemplate, m.into()),
+            GrpcCall::GetBlock(m) => (GetBlock, m.into()),
+            GrpcCall::GetBlockStatus(m) => (GetBlockStatus, m.into()),
+            GrpcCall::GetTransaction(m) => (GetTransaction, m.into()),
+            GrpcCall::GetInfo(m) => (GetInfo, m.into()),
+            GrpcCall::GetCurrentNetwork(m) => (GetCurrentNetwork, m.into()),
+            GrpcCall::GetPeerAddresses(m) => (GetPeerAddresses, m.into()),
+            GrpcCall::GetSink(m) => (GetSink, m.into()),
+            GrpcCall::GetMempoolEntry(m) => (GetMempoolEntry, m.into()),
+            GrpcCall::GetMempoolEntries(m) => (GetMempoolEntries, m.into()),
+            GrpcCall::GetConnectedPeerInfo(m) => (GetConnectedPeerInfo, m.into()),
+            GrpcCall::AddPeer(m) => (AddPeer, m.into()),
+            GrpcCall::SubmitTransaction(m) => (SubmitTransaction, m.into()),
+            GrpcCall::SubmitTransactionReplacement(m) => (SubmitTransactionReplacement, m.into()),
+            GrpcCall::GetSubnetwork(m) => (GetSubnetwork, m.into()),
+            GrpcCall::GetVirtualChainFromBlock(m) => (GetVirtualChainFromBlock, m.into()),
+            GrpcCall::GetBlocks(m) => (GetBlocks, m.into()),
+            GrpcCall::GetBlockCount(m) => (GetBlockCount, m.into()),
+            GrpcCall::GetBlockDagInfo(m) => (GetBlockDagInfo, m.into()),
+            GrpcCall::ResolveFinalityConflict(m) => (ResolveFinalityConflict, m.into()),
+            GrpcCall::Shutdown(m) => (Shutdown, m.into()),
+            GrpcCall::GetHeader(m) => (GetHeader, m.into()),
+            GrpcCall::GetHeaders(m) => (GetHeaders, m.into()),
+            GrpcCall::GetUtxosByAddresses(m) => (GetUtxosByAddresses, m.into()),
+            GrpcCall::GetBalanceByAddress(m) => (GetBalanceByAddress, m.into()),
+            GrpcCall::GetBalancesByAddresses(m) => (GetBalancesByAddresses, m.into()),
+            GrpcCall::GetSinkBlueScore(m) => (GetSinkBlueScore, m.into()),
+            GrpcCall::Ban(m) => (Ban, m.into()),
+            GrpcCall::Unban(m) => (Unban, m.into()),
+            GrpcCall::EstimateNetworkHashesPerSecond(m) => {
+                (EstimateNetworkHashesPerSecond, m.into())
+            },
+            GrpcCall::GetMempoolEntriesByAddresses(m) => (GetMempoolEntriesByAddresses, m.into()),
+            GrpcCall::GetCoinSupply(m) => (GetCoinSupply, m.into()),
+            GrpcCall::GetDaaScoreTimestampEstimate(m) => (GetDaaScoreTimestampEstimate, m.into()),
+            GrpcCall::GetFeeEstimate(m) => (GetFeeEstimate, m.into()),
+            GrpcCall::GetFeeEstimateExperimental(m) => (GetFeeEstimateExperimental, m.into()),
+            GrpcCall::GetCurrentBlockColor(m) => (GetCurrentBlockColor, m.into()),
+            GrpcCall::GetUtxoReturnAddress(m) => (GetUtxoReturnAddress, m.into()),
+        }
+    }
+}

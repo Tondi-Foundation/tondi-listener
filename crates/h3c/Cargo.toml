@@ -1,0 +1,22 @@
+[package]
+name = "xscan-h3c"
+
+description = "xscan-h3c"
+edition     = { workspace = true }
+license     = { workspace = true }
+version     = { workspace = true }
+
+
+[features]
+default = []
+
+
+[lints]
+workspace = true
+
+
+[dependencies]
+xscan-lib = { workspace = true }
+
+
+[build-dependencies]

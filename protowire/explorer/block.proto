@@ -1,0 +1,34 @@
+syntax = "proto3";
+package explorer;
+
+import "lib.proto";
+import "transaction.proto";
+
+message Parents {
+  repeated Hash parents = 1;
+}
+
+message BlueWork {
+  bytes value = 1;  // [u64;3]
+}
+
+message Header {
+  Hash hash = 1;
+  uint32 version = 2;
+  repeated Parents parents_by_level = 3;
+  Hash hash_merkle_root = 4;
+  Hash accepted_id_merkle_root = 5;
+  Hash utxo_commitment = 6;
+  uint64 timestamp = 7;
+  uint32 bits = 8;
+  uint64 nonce = 9;
+  uint64 daa_score = 10;
+  string blue_work = 11;
+  uint64 blue_score = 12;
+  Hash pruning_point = 13;
+}
+
+message Block {
+  Header header = 1;
+  repeated Transaction transactions = 2;
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+package explorer;
+
+import "lib.proto";
+import "block.proto";
+
+service ExplorerService {
+  rpc GetBlock(Hash) returns (stream Block);
+}
