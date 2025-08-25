@@ -60,7 +60,7 @@ tonic-prost = { version = "0.14", default-features = false }
 [package]
 name = "tondi-listener"
 
-description = "Tondi Scan - High-performance blockchain scanning service"
+description = "Tondi Listener - High-performance blockchain scanning service"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }

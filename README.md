@@ -1,7 +1,7 @@
 
-# Tondi Scan
+# Tondi Listener
 
-Tondi Scan is a high-performance blockchain scanning service that supports multiple protocols (HTTP/2, gRPC, WebSocket) and database backends.
+Tondi Listener is a high-performance blockchain listener service that supports multiple protocols (HTTP/2, gRPC, WebSocket) and database backends.
 
 ## Features
 

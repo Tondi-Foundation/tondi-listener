@@ -32,7 +32,7 @@ async fn handle_socket(
     _client_pool: ClientPool,
 ) -> Result<()> {
     // Send welcome message
-    send_message(&mut socket, "welcome", "Connected to Tondi Scan WebSocket").await?;
+    send_message(&mut socket, "welcome", "Connected to Tondi Listener WebSocket").await?;
     
     // Handle incoming messages
     while let Some(msg) = socket.recv().await {

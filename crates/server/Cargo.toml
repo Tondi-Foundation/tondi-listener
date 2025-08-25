@@ -1,7 +1,7 @@
 [package]
 name = "tondi-listener-server"
 
-description = "Tondi Scan Server"
+description = "Tondi Listener Server"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }

@@ -1,7 +1,7 @@
 [package]
 name = "tondi-listener-db"
 
-description = "Tondi Scan Database Layer"
+description = "Tondi Listener Database Layer"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }

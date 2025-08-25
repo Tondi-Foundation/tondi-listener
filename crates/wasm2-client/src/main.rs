@@ -9,7 +9,7 @@ fn main() -> Result<Nil> {
     info!("Running");
 
     spawn_local(async {
-        // 创建新的Tondi Scan客户端
+        // 创建新的Tondi Listener客户端
         // 从统一配置文件读取配置，而不是硬编码
         let config = serde_wasm_bindgen::to_value(&serde_json::json!({
             // 配置将从统一配置文件读取，支持环境变量覆盖
@@ -21,7 +21,7 @@ fn main() -> Result<Nil> {
         
         let client = TondiScanClient::new(config).unwrap();
         
-        info!("Tondi Scan client created");
+        info!("Tondi Listener client created");
         
         // 连接测试
         if let Err(e) = client.connect().await {

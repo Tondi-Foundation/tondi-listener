@@ -1,4 +1,4 @@
-# Tondi Scan Server Configuration Example
+# Tondi Listener Server Configuration Example
 
 [server]
 host_url = "127.0.0.1:3000"

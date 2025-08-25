@@ -88,7 +88,7 @@ fn default_events() -> Vec<String> {
     ]
 }
 
-/// Tondi Scan WASM Client Configuration
+/// Tondi Listener WASM Client Configuration
 /// 
 /// 配置说明：
 /// 1. 不再硬编码 URL，支持通过配置文件或参数提供
@@ -219,7 +219,7 @@ impl TryFrom<TondiScanConfig> for tondi_wrpc_wasm::RpcConfig {
     }
 }
 
-/// Tondi Scan WASM Client
+/// Tondi Listener WASM Client
 #[wasm_bindgen]
 pub struct TondiScanClient {
     inner: RpcClient,
@@ -231,7 +231,7 @@ pub struct TondiScanClient {
 
 #[wasm_bindgen]
 impl TondiScanClient {
-    /// Create new Tondi Scan Client
+    /// Create new Tondi Listener Client
     #[wasm_bindgen(constructor)]
     pub fn new(config: JsValue) -> Result<TondiScanClient, JsValue> {
         let config: TondiScanConfig = serde_wasm_bindgen::from_value(config)
