@@ -30,11 +30,11 @@ tokio      = { workspace = true, features = ["macros", "net", "rt-multi-thread",
 tower      = { workspace = true, features = ["load-shed"] }
 tower-http = { workspace = true, features = ["cors", "timeout", "trace"] }
 
+serde_json        = { workspace = true }
 tondi-grpc-client = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 tondi-grpc-core   = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 tondi-notify      = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 tondi-rpc-core    = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 tondi-utils       = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
-
 
 [build-dependencies]

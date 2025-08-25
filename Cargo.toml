@@ -35,6 +35,7 @@ prost                      = { default-features = false, version = "0.14" }
 rkyv                       = { default-features = false, version = "0.8" }
 serde                      = { default-features = false, version = "1" }
 serde-wasm-bindgen         = { default-features = false, version = "0.6" }
+serde_json                 = { default-features = false, version = "1.0" }
 thiserror                  = { default-features = false, version = "2.0" }
 tokio                      = { default-features = false, version = "1" }
 tonic                      = { default-features = false, version = "0.14" }

@@ -1,7 +1,11 @@
 use std::{io::Error as StdIoError, net::AddrParseError as StdNetAddrParseError};
 
-use axum::response::{IntoResponse, Response as AxumResponse};
+use axum::{
+    Error as AxumError,
+    response::{IntoResponse, Response as AxumResponse},
+};
 use nill::Nil;
+use serde_json::Error as SerdeJsonError;
 use xscan_db::{
     diesel::{
         r2d2::PoolError as DieselR2d2PoolError,
@@ -38,6 +42,12 @@ pub enum Error {
 
     #[error(transparent)]
     ClientPoolError(#[from] ClientPoolError),
+
+    #[error(transparent)]
+    AxumError(#[from] AxumError),
+
+    #[error(transparent)]
+    SerdeJsonError(#[from] SerdeJsonError),
 
     #[error("{0}")]
     Generic(String),

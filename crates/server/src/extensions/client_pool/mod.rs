@@ -1,3 +1,4 @@
+pub mod consumer;
 pub mod listener;
 
 use std::{ops::Deref, sync::Arc};
@@ -8,18 +9,22 @@ use tondi_rpc_core::{RpcError, notify::mode::NotificationMode};
 
 use crate::{
     error::{Error, Result},
-    extensions::client_pool::listener::ListenerManager,
+    extensions::client_pool::consumer::Consumer,
     shared::pool::{Error as PoolError, HealthCheck, Metadata, Pool},
 };
 
 #[derive(Debug)]
 pub struct Client {
     inner: GrpcClient,
-    pub listener_manager: Arc<ListenerManager>,
+    pub consumer: Consumer,
 }
 
 impl Client {
-    pub async fn connect(url: String) -> Result<Self, PoolError> {
+    pub const fn new(inner: GrpcClient, consumer: Consumer) -> Self {
+        Self { inner, consumer }
+    }
+
+    pub async fn client_multi(url: String) -> Result<GrpcClient, PoolError> {
         let inner = GrpcClient::connect_with_args(
             NotificationMode::MultiListeners,
             url,
@@ -32,10 +37,20 @@ impl Client {
         )
         .await?;
         inner.start(None).await;
+        Ok(inner)
+    }
 
-        let listener_manager = ListenerManager::new(&inner).await?;
+    pub async fn client_direct(url: String) -> Result<GrpcClient, PoolError> {
+        let inner = GrpcClient::connect(url).await?;
+        inner.start(None).await;
+        Ok(inner)
+    }
 
-        Ok(Self { inner, listener_manager: Arc::new(listener_manager) })
+    pub async fn connect(url: String) -> Result<Self, PoolError> {
+        // let inner = Self::client_multi(url).await?;
+        let inner = Self::client_direct(url).await?;
+        let listener_manager = Consumer::new(&inner).await?;
+        Ok(Self::new(inner, listener_manager))
     }
 }
 
@@ -64,13 +79,13 @@ impl HealthCheck for Client {
 
 impl From<GrpcClientError> for PoolError {
     fn from(err: GrpcClientError) -> Self {
-        Self::from(format!("Connect Failed: {err}"))
+        Self::from(format!("Connect Fail: {err}"))
     }
 }
 
 impl From<RpcError> for PoolError {
     fn from(err: RpcError) -> Self {
-        Self::from(format!("RPC Failed: {err}"))
+        Self::from(format!("RPC Fail: {err}"))
     }
 }
 

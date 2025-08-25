@@ -3,10 +3,10 @@ use std::{collections::HashMap, ops::Deref};
 use tondi_grpc_client::GrpcClient;
 use tondi_grpc_core::channel::NotificationChannel;
 use tondi_notify::{
-    connection::ChannelType,
-    events::{EVENT_TYPE_ARRAY, EventType},
+    connection::{ChannelConnection, ChannelType},
+    events::EventType,
 };
-use tondi_rpc_core::{Notification, api::rpc::RpcApi, notify::connection::ChannelConnection};
+use tondi_rpc_core::{Notification, api::rpc::RpcApi};
 use tondi_utils::channel::Receiver;
 
 use crate::{
@@ -44,9 +44,9 @@ pub struct ListenerManager {
 }
 
 impl ListenerManager {
-    pub async fn new(client: &GrpcClient) -> Result<Self, PoolError> {
+    pub async fn new(client: &GrpcClient, events: &[EventType]) -> Result<Self, PoolError> {
         let mut listeners = HashMap::new();
-        for ev in EVENT_TYPE_ARRAY {
+        for ev in events.iter().copied() {
             let listener = Listener::subscribe(&client, ev).await?;
             listeners.insert(ev, listener);
         }
