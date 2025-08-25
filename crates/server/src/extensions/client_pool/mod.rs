@@ -4,7 +4,7 @@ use std::{ops::Deref, sync::Arc};
 
 use axum::Extension;
 use tondi_grpc_client::{GrpcClient, error::Error as GrpcClientError};
-use tondi_scan_library::log::info;
+use tondi_listener_library::log::info;
 use workflow_rpc::client::{RpcClient, ConnectOptions};
 
 use crate::{

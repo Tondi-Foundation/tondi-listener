@@ -3,7 +3,7 @@ use axum::{
     http::StatusCode,
     response::Json,
 };
-use tondi_scan_db::{
+use tondi_listener_db::{
     models::transaction::{Tx, TxOu},
     schema::table::{TTx, TTxOu},
     DieselPool,

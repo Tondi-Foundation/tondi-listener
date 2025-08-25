@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-wasm3-client"
+name = "tondi-listener-wasm3-client"
 
 description = "Tondi Scan WebAssembly Components"
 edition     = { workspace = true }

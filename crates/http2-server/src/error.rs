@@ -1,4 +1,4 @@
-use tondi_scan_http2_client::tonic::Status as TonicStatus;
+use tondi_listener_http2_client::tonic::Status as TonicStatus;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

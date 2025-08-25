@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-db"
+name = "tondi-listener-db"
 
 description = "Tondi Scan Database Layer"
 edition     = { workspace = true }

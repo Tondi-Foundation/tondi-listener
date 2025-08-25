@@ -4,16 +4,16 @@
 [server]
 host_url = "0.0.0.0:3000"
 grpc_url = "grpc://8.210.45.192:16610"
-database_url = "postgres://tondi_user:${TONDI_DB_PASSWORD}@${TONDI_DB_HOST}:5432/tondi_scan_prod"
+database_url = "postgres://tondi_user:${TONDI_DB_PASSWORD}@${TONDI_DB_HOST}:5432/tondi_listener_prod"
 log_level = "warn"
 environment = "production"
 
 [server.cors]
 # 生产环境严格限制来源
 allowed_origins = [
-    "https://tondi-scan.com",
-    "https://www.tondi-scan.com",
-    "https://app.tondi-scan.com"
+    "https://tondi-listener.com",
+    "https://www.tondi-listener.com",
+    "https://app.tondi-listener.com"
 ]
 allowed_methods = ["GET", "POST"]
 allowed_headers = ["Content-Type", "Authorization"]
@@ -74,7 +74,7 @@ log_level = "warn"
 enable_console_log = false  # 生产环境关闭控制台日志
 
 [database]
-url = "postgres://tondi_user:${TONDI_DB_PASSWORD}@${TONDI_DB_HOST}:5432/tondi_scan_prod"
+url = "postgres://tondi_user:${TONDI_DB_PASSWORD}@${TONDI_DB_HOST}:5432/tondi_listener_prod"
 max_connections = 50
 min_connections = 10
 connection_timeout = 60
@@ -84,7 +84,7 @@ idle_timeout = 600
 level = "warn"
 format = "json"
 output = "file"
-file_path = "/var/log/tondi-scan/production.log"
+file_path = "/var/log/tondi-listener/production.log"
 
 [monitoring]
 enabled = true

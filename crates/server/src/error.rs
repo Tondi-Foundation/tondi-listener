@@ -2,14 +2,14 @@ use std::{io::Error as StdIoError, net::AddrParseError as StdNetAddrParseError};
 
 use axum::response::{IntoResponse, Response as AxumResponse};
 use http::StatusCode;
-use tondi_scan_db::{
+use tondi_listener_db::{
     diesel::{
         r2d2::PoolError as DieselR2d2PoolError,
         result::{ConnectionError as DieselConnectionError, Error as DieselError},
     },
     error::Error as TondiScanDbError,
 };
-use tondi_scan_http2_client::tonic::transport::Error as TonicTransportError;
+use tondi_listener_http2_client::tonic::transport::Error as TonicTransportError;
 
 use crate::{
     ctx::config::ConfigError,

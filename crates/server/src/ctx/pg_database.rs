@@ -1,5 +1,5 @@
 use axum::extract::{FromRef, State};
-use tondi_scan_db::diesel::{
+use tondi_listener_db::diesel::{
     pg::PgConnection,
     r2d2::{ConnectionManager, Pool, PooledConnection},
 };

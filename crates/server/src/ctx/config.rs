@@ -4,7 +4,7 @@ use std::env;
 use thiserror::Error;
 
 use crate::ctx::{Context, event_config::{EventConfig, EventStrategy}};
-use tondi_scan_library::log::{info, warn};
+use tondi_listener_library::log::{info, warn};
 
 // Import TONDI related types
 use tondi_consensus_core::network::NetworkType;

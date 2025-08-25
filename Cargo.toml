@@ -11,13 +11,13 @@ version = "0.1.1"
 
 [workspace.dependencies]
 # Member
-tondi-scan-db  = { path = "crates/db", version = "0.1.1" }
-tondi-scan-http2-client = { path = "crates/http2-client", version = "0.1.1" }
-tondi-scan-http2-server = { path = "crates/http2-server", version = "0.1.1" }
-tondi-scan-http3-client = { path = "crates/http3-client", version = "0.1.1" }
-tondi-scan-library = { path = "crates/library", version = "0.1.1" }
-tondi-scan-wasm2-client = { path = "crates/wasm2-client", version = "0.1.1" }
-tondi-scan-wasm3-client = { path = "crates/wasm3-client", version = "0.1.1" }
+tondi-listener-db  = { path = "crates/db", version = "0.1.1" }
+tondi-listener-http2-client = { path = "crates/http2-client", version = "0.1.1" }
+tondi-listener-http2-server = { path = "crates/http2-server", version = "0.1.1" }
+tondi-listener-http3-client = { path = "crates/http3-client", version = "0.1.1" }
+tondi-listener-library = { path = "crates/library", version = "0.1.1" }
+tondi-listener-wasm2-client = { path = "crates/wasm2-client", version = "0.1.1" }
+tondi-listener-wasm3-client = { path = "crates/wasm3-client", version = "0.1.1" }
 
 # Extern
 axum                       = { default-features = false, version = "0.8" }
@@ -58,7 +58,7 @@ tonic-prost = { version = "0.14", default-features = false }
 
 
 [package]
-name = "tondi-scan"
+name = "tondi-listener"
 
 description = "Tondi Scan - High-performance blockchain scanning service"
 edition     = { workspace = true }
@@ -71,10 +71,10 @@ default = []
 
 
 [dependencies]
-tondi-scan-http2-client = { workspace = true }
-tondi-scan-http2-server = { workspace = true }
-tondi-scan-library = { workspace = true }
-tondi-scan-wasm2-client = { workspace = true }
+tondi-listener-http2-client = { workspace = true }
+tondi-listener-http2-server = { workspace = true }
+tondi-listener-library = { workspace = true }
+tondi-listener-wasm2-client = { workspace = true }
 
 
 [workspace.lints.clippy]

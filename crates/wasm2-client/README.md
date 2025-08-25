@@ -102,7 +102,7 @@ reconnect_delay_ms = 1000
 
 ### 8. 配置文件结构
 ```
-tondi-scan/
+tondi-listener/
 ├── config.toml          # 统一配置文件
 ├── config.example.toml  # 配置示例文件
 ├── env.example          # 环境变量示例

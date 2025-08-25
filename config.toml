@@ -147,7 +147,7 @@ idle_timeout = 300
 level = "info"
 format = "json"  # json, text
 output = "stdout"  # stdout, stderr, file
-file_path = "logs/tondi-scan.log"  # Only used if output = "file"
+file_path = "logs/tondi-listener.log"  # Only used if output = "file"
 
 [monitoring]
 # Monitoring and metrics configuration

@@ -27,7 +27,7 @@ Tondi Scan is a high-performance blockchain scanning service that supports multi
 
 ```bash
 git clone <repository-url>
-cd tondi-scan
+cd tondi-listener
 ```
 
 2. Install dependencies
@@ -47,10 +47,10 @@ cp env.example .env
 
 ```bash
 # Start gRPC server
-cargo run -p tondi-scan-server --bin server
+cargo run -p tondi-listener-server --bin server
 
 # Start HTTP router
-cargo run -p tondi-scan-server --bin router
+cargo run -p tondi-listener-server --bin router
 ```
 
 ## Configuration
@@ -112,7 +112,7 @@ You can also use a TOML configuration file. See `config.example.toml` for a comp
 ## Project Structure
 
 ```
-tondi-scan/
+tondi-listener/
 ├── crates/
 │   ├── db/              # Database layer (Diesel ORM)
 │   ├── http2-client/    # HTTP/2 client
@@ -143,7 +143,7 @@ This project enforces strict code quality tools:
 cargo test
 
 # Run tests for a specific crate
-cargo test -p tondi-scan-server
+cargo test -p tondi-listener-server
 ```
 
 ### Building
@@ -173,7 +173,7 @@ export TONDI_SCAN_LOG_LEVEL=warn
 2. Use production middleware
 
 ```rust
-use tondi_scan_server::middleware::production_middleware;
+use tondi_listener_server::middleware::production_middleware;
 let middleware = production_middleware(&config);
 ```
 

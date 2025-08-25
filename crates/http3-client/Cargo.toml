@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-http3-client"
+name = "tondi-listener-http3-client"
 
 description = "Tondi Scan HTTP/3 Client"
 edition     = { workspace = true }
@@ -12,7 +12,7 @@ default = []
 
 
 [dependencies]
-tondi-scan-library = { workspace = true }
+tondi-listener-library = { workspace = true }
 
 
 [lints]

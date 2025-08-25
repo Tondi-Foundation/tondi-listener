@@ -6,7 +6,7 @@ pub mod websocket;
 use axum::{Router, response::Html, routing::{get,post}};
 
 use crate::{ctx::Context, error::Result, extensions::client_pool};
-use tondi_scan_library::log::info;
+use tondi_listener_library::log::info;
 
 pub async fn index() -> Html<&'static str> {
     Html("Axum Serve")

@@ -85,7 +85,7 @@ idle_timeout = 60
 level = "debug"
 format = "text"  # 开发环境使用文本格式，便于调试
 output = "stdout"
-file_path = "logs/tondi-scan-dev.log"
+file_path = "logs/tondi-listener-dev.log"
 
 [monitoring]
 enabled = false  # 开发环境关闭监控

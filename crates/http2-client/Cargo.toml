@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-http2-client"
+name = "tondi-listener-http2-client"
 
 description = "Tondi Scan HTTP/2 Client"
 edition     = { workspace = true }

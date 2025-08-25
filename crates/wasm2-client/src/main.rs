@@ -1,7 +1,7 @@
 use nill::{Nil, nil};
 use wasm_bindgen_futures::spawn_local;
-use tondi_scan_library::log::{info, init_tracing_browser_subscriber_log};
-use tondi_scan_wasm2_client::{error::Result, client::TondiScanClient};
+use tondi_listener_library::log::{info, init_tracing_browser_subscriber_log};
+use tondi_listener_wasm2_client::{error::Result, client::TondiScanClient};
 
 // #[tokio::main(flavor = "current_thread")] async
 fn main() -> Result<Nil> {

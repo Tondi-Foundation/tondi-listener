@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-http2-server"
+name = "tondi-listener-http2-server"
 
 description = "Tondi Scan HTTP/2 Server"
 edition     = { workspace = true }
@@ -24,7 +24,7 @@ nill = { workspace = true }
 prost = { workspace = true }
 thiserror = { workspace = true }
 tonic = { workspace = true, features = ["codegen"] }
-tondi-scan-http2-client = { workspace = true }
+tondi-listener-http2-client = { workspace = true }
 
 
 [build-dependencies]

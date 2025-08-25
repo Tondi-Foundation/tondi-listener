@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-server"
+name = "tondi-listener-server"
 
 description = "Tondi Scan Server"
 edition     = { workspace = true }
@@ -16,10 +16,10 @@ workspace = true
 
 
 [dependencies]
-tondi-scan-db  = { workspace = true }
-tondi-scan-http2-client = { workspace = true, features = ["gzip", "router", "transport"] }
-tondi-scan-http2-server = { workspace = true }
-tondi-scan-library = { workspace = true, features = ["mimalloc"] }
+tondi-listener-db  = { workspace = true }
+tondi-listener-http2-client = { workspace = true, features = ["gzip", "router", "transport"] }
+tondi-listener-http2-server = { workspace = true }
+tondi-listener-library = { workspace = true, features = ["mimalloc"] }
 
 axum       = { workspace = true, features = ["http2", "json", "query", "tokio", "tracing", "ws"] }
 futures    = { workspace = true }

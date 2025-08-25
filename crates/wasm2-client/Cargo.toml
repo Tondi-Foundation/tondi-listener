@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-wasm2-client"
+name = "tondi-listener-wasm2-client"
 
 description = "Tondi Scan WebAssembly Client"
 edition     = { workspace = true }
@@ -12,7 +12,7 @@ default = []
 
 
 [dependencies]
-tondi-scan-library = { workspace = true, features = ["tracing-browser"] }
+tondi-listener-library = { workspace = true, features = ["tracing-browser"] }
 tondi-wrpc-wasm = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main", features = ["wasm32-sdk"] }
 tondi-addresses = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 

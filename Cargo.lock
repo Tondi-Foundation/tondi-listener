@@ -4089,6 +4089,128 @@ dependencies = [
 ]
 
 [[package]]
+name = "tondi-listener"
+version = "0.1.1"
+dependencies = [
+ "tondi-listener-http2-client",
+ "tondi-listener-http2-server",
+ "tondi-listener-library",
+ "tondi-listener-wasm2-client",
+]
+
+[[package]]
+name = "tondi-listener-db"
+version = "0.1.1"
+dependencies = [
+ "diesel",
+ "hex",
+ "serde",
+ "thiserror 2.0.16",
+]
+
+[[package]]
+name = "tondi-listener-http2-client"
+version = "0.1.1"
+dependencies = [
+ "prost 0.14.1",
+ "tonic 0.14.1",
+ "tonic-prost",
+ "tonic-prost-build",
+ "tonic-web",
+]
+
+[[package]]
+name = "tondi-listener-http2-server"
+version = "0.1.1"
+dependencies = [
+ "nill",
+ "prost 0.14.1",
+ "thiserror 2.0.16",
+ "tondi-listener-http2-client",
+ "tonic 0.14.1",
+]
+
+[[package]]
+name = "tondi-listener-http3-client"
+version = "0.1.1"
+dependencies = [
+ "tondi-listener-library",
+]
+
+[[package]]
+name = "tondi-listener-library"
+version = "0.1.1"
+dependencies = [
+ "mimalloc",
+ "thiserror 2.0.16",
+ "tracing",
+ "tracing-browser-subscriber",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "tondi-listener-server"
+version = "0.1.1"
+dependencies = [
+ "axum 0.8.4",
+ "diesel",
+ "faster-hex 0.10.0",
+ "futures",
+ "http 1.3.1",
+ "nill",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.16",
+ "tokio",
+ "tondi-consensus-core",
+ "tondi-grpc-client",
+ "tondi-grpc-core",
+ "tondi-listener-db",
+ "tondi-listener-http2-client",
+ "tondi-listener-http2-server",
+ "tondi-listener-library",
+ "tondi-notify",
+ "tondi-rpc-core",
+ "tondi-utils",
+ "tondi-wrpc-wasm",
+ "tower 0.5.2",
+ "tower-http 0.6.6",
+ "workflow-rpc",
+]
+
+[[package]]
+name = "tondi-listener-wasm2-client"
+version = "0.1.1"
+dependencies = [
+ "console_error_panic_hook",
+ "futures",
+ "gloo",
+ "js-sys",
+ "log",
+ "nill",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "thiserror 2.0.16",
+ "tondi-addresses",
+ "tondi-listener-library",
+ "tondi-wrpc-wasm",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "wasm-streams",
+ "web-sys",
+ "workflow-rpc",
+]
+
+[[package]]
+name = "tondi-listener-wasm3-client"
+version = "0.1.1"
+dependencies = [
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "tondi-math"
 version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
@@ -4221,128 +4343,6 @@ dependencies = [
  "quote",
  "regex",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "tondi-scan"
-version = "0.1.1"
-dependencies = [
- "tondi-scan-http2-client",
- "tondi-scan-http2-server",
- "tondi-scan-library",
- "tondi-scan-wasm2-client",
-]
-
-[[package]]
-name = "tondi-scan-db"
-version = "0.1.1"
-dependencies = [
- "diesel",
- "hex",
- "serde",
- "thiserror 2.0.16",
-]
-
-[[package]]
-name = "tondi-scan-http2-client"
-version = "0.1.1"
-dependencies = [
- "prost 0.14.1",
- "tonic 0.14.1",
- "tonic-prost",
- "tonic-prost-build",
- "tonic-web",
-]
-
-[[package]]
-name = "tondi-scan-http2-server"
-version = "0.1.1"
-dependencies = [
- "nill",
- "prost 0.14.1",
- "thiserror 2.0.16",
- "tondi-scan-http2-client",
- "tonic 0.14.1",
-]
-
-[[package]]
-name = "tondi-scan-http3-client"
-version = "0.1.1"
-dependencies = [
- "tondi-scan-library",
-]
-
-[[package]]
-name = "tondi-scan-library"
-version = "0.1.1"
-dependencies = [
- "mimalloc",
- "thiserror 2.0.16",
- "tracing",
- "tracing-browser-subscriber",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "tondi-scan-server"
-version = "0.1.1"
-dependencies = [
- "axum 0.8.4",
- "diesel",
- "faster-hex 0.10.0",
- "futures",
- "http 1.3.1",
- "nill",
- "serde",
- "serde_json",
- "thiserror 2.0.16",
- "tokio",
- "tondi-consensus-core",
- "tondi-grpc-client",
- "tondi-grpc-core",
- "tondi-notify",
- "tondi-rpc-core",
- "tondi-scan-db",
- "tondi-scan-http2-client",
- "tondi-scan-http2-server",
- "tondi-scan-library",
- "tondi-utils",
- "tondi-wrpc-wasm",
- "tower 0.5.2",
- "tower-http 0.6.6",
- "workflow-rpc",
-]
-
-[[package]]
-name = "tondi-scan-wasm2-client"
-version = "0.1.1"
-dependencies = [
- "console_error_panic_hook",
- "futures",
- "gloo",
- "js-sys",
- "log",
- "nill",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "thiserror 2.0.16",
- "tondi-addresses",
- "tondi-scan-library",
- "tondi-wrpc-wasm",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "wasm-bindgen-test",
- "wasm-streams",
- "web-sys",
- "workflow-rpc",
-]
-
-[[package]]
-name = "tondi-scan-wasm3-client"
-version = "0.1.1"
-dependencies = [
- "wasm-bindgen",
 ]
 
 [[package]]
