@@ -20,12 +20,14 @@ mod wrpc_ports {
 
 /// 统一配置文件结构
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[allow(dead_code)]
 struct UnifiedConfig {
     #[serde(default)]
     client: ClientConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[allow(dead_code)]
 struct ClientConfig {
     #[serde(default = "default_network")]
     default_network: String,
@@ -54,17 +56,29 @@ struct ClientConfig {
 }
 
 // Default value functions
+#[allow(dead_code)]
 fn default_network() -> String { "devnet".to_string() }
+#[allow(dead_code)]
 fn default_encoding() -> String { "borsh".to_string() }
+#[allow(dead_code)]
 fn default_host() -> String { "8.210.45.192".to_string() }
+#[allow(dead_code)]
 fn default_protocol() -> String { "wss".to_string() }
+#[allow(dead_code)]
 fn default_connection_timeout() -> u64 { 10000 }
+#[allow(dead_code)]
 fn default_ping_interval() -> u64 { 30000 }
+#[allow(dead_code)]
 fn default_auto_reconnect() -> bool { true }
+#[allow(dead_code)]
 fn default_max_reconnect_attempts() -> u32 { 5 }
+#[allow(dead_code)]
 fn default_reconnect_delay() -> u64 { 1000 }
+#[allow(dead_code)]
 fn default_log_level() -> String { "info".to_string() }
+#[allow(dead_code)]
 fn default_enable_console_log() -> bool { true }
+#[allow(dead_code)]
 fn default_events() -> Vec<String> {
     vec![
         "block-added".to_string(),

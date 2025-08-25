@@ -1,0 +1,111 @@
+# Tondi Scan Test Environment Configuration
+# 测试环境配置文件
+
+[server]
+host_url = "0.0.0.0:3001"
+grpc_url = "grpc://8.210.45.192:16610"
+database_url = "postgres://postgres:postgres@127.0.0.1/tondi_scan_test"
+log_level = "info"
+environment = "testing"
+
+[server.cors]
+# 测试环境允许测试域名
+allowed_origins = ["http://localhost:3001", "http://test.localhost:3001"]
+allowed_methods = ["GET", "POST", "PUT", "DELETE"]
+allowed_headers = ["Content-Type", "Authorization", "X-Test-Token"]
+max_age = 1800
+
+[server.security]
+rate_limit = 500
+max_body_size = 5242880  # 5MB
+
+[server.events]
+enabled_events = [
+    "block-added",
+    "utxos-changed",
+    "virtual-chain-changed"
+]
+
+event_strategy = "batch"
+
+[server.events.batch]
+batch_size = 25
+batch_timeout_ms = 200
+
+[server.events.priority]
+high_priority = ["block-added"]
+medium_priority = ["utxos-changed"]
+low_priority = ["virtual-chain-changed"]
+
+buffer_size = 200
+enable_deduplication = false  # 测试环境关闭去重
+
+[server.wrpc]
+enabled = true
+protocol = "ws"
+host = "8.210.45.192"
+port = 0
+network = "testnet"  # 测试环境使用 testnet
+encoding = "json"     # 测试环境使用 json 编码
+
+[client]
+# WASM Client Configuration for Testing
+default_network = "testnet"
+default_encoding = "json"
+default_host = "8.210.45.192"
+default_protocol = "ws"
+
+connection_timeout_ms = 3000  # 测试环境快速超时
+ping_interval_ms = 10000
+auto_reconnect = false  # 测试环境关闭自动重连
+max_reconnect_attempts = 1
+reconnect_delay_ms = 100
+
+default_events = [
+    "block-added",
+    "utxos-changed"
+]
+
+log_level = "info"
+enable_console_log = false  # 测试环境关闭控制台日志
+
+[database]
+url = "postgres://postgres:postgres@127.0.0.1/tondi_scan_test"
+max_connections = 3
+min_connections = 1
+connection_timeout = 5
+idle_timeout = 30
+
+[logging]
+level = "info"
+format = "json"
+output = "file"
+file_path = "logs/tondi-scan-test.log"
+
+[monitoring]
+enabled = true
+metrics_port = 9092
+health_check_interval = 15
+prometheus_endpoint = "/metrics"
+
+# 测试环境特定配置
+[testing]
+# 测试模式设置
+test_mode = true
+cleanup_on_exit = true
+isolated_tests = true
+
+# 测试数据设置
+test_data_seed = 12345
+mock_external_apis = true
+fake_network_latency = 100
+
+# 性能测试设置
+performance_testing = true
+load_test_enabled = true
+stress_test_threshold = 1000
+
+# 覆盖率设置
+code_coverage = true
+test_timeout = 30
+retry_failed_tests = 2

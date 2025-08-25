@@ -1,5 +1,15 @@
 # Tondi Scan Unified Configuration File
-# This file contains all configuration for the Tondi Scan project
+# 统一配置文件 - 默认配置（开发环境）
+# 
+# 环境特定配置文件：
+# - config.dev.toml    - 开发环境配置
+# - config.test.toml   - 测试环境配置  
+# - config.main.toml   - 生产环境配置
+#
+# 使用方法：
+# 1. 复制对应环境的配置文件为 config.toml
+# 2. 或设置环境变量 TONDI_ENV=dev|test|main
+# 3. 或通过命令行参数 --config=config.dev.toml
 
 [server]
 host_url = "127.0.0.1:3000"
@@ -145,3 +155,18 @@ enabled = true
 metrics_port = 9090
 health_check_interval = 30
 prometheus_endpoint = "/metrics"
+
+# 环境选择配置
+[environment]
+# 当前环境类型
+current = "development"  # development, testing, production
+
+# 环境特定配置路径
+config_path = "config.toml"  # 可以是 config.dev.toml, config.test.toml, config.main.toml
+
+# 环境变量前缀
+env_prefix = "TONDI_SCAN"
+
+# 配置热重载
+hot_reload = false
+watch_config = false

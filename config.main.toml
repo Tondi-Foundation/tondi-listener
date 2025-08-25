@@ -1,0 +1,125 @@
+# Tondi Scan Production Environment Configuration
+# 生产环境配置文件
+
+[server]
+host_url = "0.0.0.0:3000"
+grpc_url = "grpc://8.210.45.192:16610"
+database_url = "postgres://tondi_user:${TONDI_DB_PASSWORD}@${TONDI_DB_HOST}:5432/tondi_scan_prod"
+log_level = "warn"
+environment = "production"
+
+[server.cors]
+# 生产环境严格限制来源
+allowed_origins = [
+    "https://tondi-scan.com",
+    "https://www.tondi-scan.com",
+    "https://app.tondi-scan.com"
+]
+allowed_methods = ["GET", "POST"]
+allowed_headers = ["Content-Type", "Authorization"]
+max_age = 86400  # 24小时
+
+[server.security]
+rate_limit = 100
+max_body_size = 2097152  # 2MB
+
+[server.events]
+enabled_events = [
+    "block-added",
+    "utxos-changed",
+    "virtual-chain-changed"
+]
+
+event_strategy = "priority"
+
+[server.events.batch]
+batch_size = 200
+batch_timeout_ms = 500
+
+[server.events.priority]
+high_priority = ["block-added", "utxos-changed"]
+medium_priority = ["virtual-chain-changed"]
+low_priority = []
+
+buffer_size = 5000
+enable_deduplication = true
+
+[server.wrpc]
+enabled = true
+protocol = "wss"  # 生产环境使用安全连接
+host = "8.210.45.192"
+port = 0
+network = "mainnet"  # 生产环境使用 mainnet
+encoding = "borsh"   # 生产环境使用 borsh 编码
+
+[client]
+# WASM Client Configuration for Production
+default_network = "mainnet"
+default_encoding = "borsh"
+default_host = "8.210.45.192"
+default_protocol = "wss"
+
+connection_timeout_ms = 15000
+ping_interval_ms = 60000
+auto_reconnect = true
+max_reconnect_attempts = 3
+reconnect_delay_ms = 5000
+
+default_events = [
+    "block-added",
+    "utxos-changed"
+]
+
+log_level = "warn"
+enable_console_log = false  # 生产环境关闭控制台日志
+
+[database]
+url = "postgres://tondi_user:${TONDI_DB_PASSWORD}@${TONDI_DB_HOST}:5432/tondi_scan_prod"
+max_connections = 50
+min_connections = 10
+connection_timeout = 60
+idle_timeout = 600
+
+[logging]
+level = "warn"
+format = "json"
+output = "file"
+file_path = "/var/log/tondi-scan/production.log"
+
+[monitoring]
+enabled = true
+metrics_port = 9090
+health_check_interval = 10
+prometheus_endpoint = "/metrics"
+
+# 生产环境特定配置
+[production]
+# 性能优化设置
+performance_mode = true
+cache_enabled = true
+compression_enabled = true
+
+# 安全设置
+security_headers = true
+rate_limiting = true
+ddos_protection = true
+
+# 高可用设置
+load_balancing = true
+health_check_enabled = true
+auto_scaling = true
+
+# 备份设置
+backup_enabled = true
+backup_interval = 3600
+backup_retention = 30
+
+# 监控设置
+alerting_enabled = true
+sla_monitoring = true
+performance_monitoring = true
+
+# 日志设置
+log_rotation = true
+log_retention_days = 90
+log_compression = true
