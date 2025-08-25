@@ -4327,10 +4327,12 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "thiserror 2.0.16",
- "tondi-scan-http2-client",
+ "tondi-addresses",
  "tondi-scan-library",
+ "tondi-wrpc-wasm",
  "wasm-bindgen",
  "wasm-bindgen-futures",
+ "wasm-bindgen-test",
  "wasm-streams",
  "web-sys",
  "workflow-rpc",
@@ -5134,9 +5136,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-streams"
-version = "0.4.2"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "15053d8d85c7eccdbefef60f06769760a563c7f0a9d6902a13d35c7800b0ad65"
+checksum = "b4609d447824375f43e1ffbc051b50ad8f4b3ae8219680c94452ea05eb240ac7"
 dependencies = [
  "futures-util",
  "js-sys",

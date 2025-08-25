@@ -1,13 +1,15 @@
 use thiserror::Error;
-use tondi_scan_http2_client::tonic::Status as TonicStatus;
 
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error(transparent)]
-    TonicStatus(#[from] TonicStatus),
-
     #[error("{0}")]
     Generic(String),
+    
+    #[error("WebSocket error: {0}")]
+    WebSocket(String),
+    
+    #[error("Serialization error: {0}")]
+    Serialization(String),
 }
 
 impl From<String> for Error {

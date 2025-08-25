@@ -1,0 +1,41 @@
+[client]
+# Connection configuration - no hardcoded URL, users must provide via parameter
+# If no URL is provided, it will be automatically computed based on network and encoding type
+# default_url = "wss://8.210.45.192:18610"  # removed hardcoding
+
+# Default network type and encoding
+default_network = "devnet"
+default_encoding = "borsh"
+
+# Default host address (if no full URL is provided)
+default_host = "8.210.45.192"
+
+# Default protocol
+default_protocol = "wss"
+
+# Connection timeout settings (milliseconds)
+connection_timeout_ms = 10000
+ping_interval_ms = 30000
+
+# Reconnection settings
+auto_reconnect = true
+max_reconnect_attempts = 5
+reconnect_delay_ms = 1000
+
+# Event subscription settings
+default_events = [
+    "block-added",
+    "utxos-changed", 
+    "virtual-chain-changed",
+    "new-block-template"
+]
+
+# Logging settings
+log_level = "info"
+enable_console_log = true
+
+# Port mapping reference (used for auto-calculation)
+# mainnet + borsh = 17110, mainnet + json = 18110
+# testnet + borsh = 17210, testnet + json = 18210
+# devnet + borsh = 17610, devnet + json = 18610
+# simnet + borsh = 17310, simnet + json = 18310
