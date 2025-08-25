@@ -4,8 +4,9 @@ use crate::ctx::config::CorsConfig;
 pub fn cors(config: &CorsConfig) -> CorsLayer {
     let mut cors = CorsLayer::new();
     
-    // 设置允许的源
+    // Set allowed origins
     if config.allowed_origins.is_empty() {
+        // If no configuration, allow all origins (equivalent to no CORS restrictions)
         cors = cors.allow_origin(Any);
     } else {
         for origin in &config.allowed_origins {
@@ -13,8 +14,9 @@ pub fn cors(config: &CorsConfig) -> CorsLayer {
         }
     }
     
-    // 设置允许的方法
+    // Set allowed methods
     if config.allowed_methods.is_empty() {
+        // If no configuration, allow all methods
         cors = cors.allow_methods(Any);
     } else {
         for method in &config.allowed_methods {
@@ -24,8 +26,9 @@ pub fn cors(config: &CorsConfig) -> CorsLayer {
         }
     }
     
-    // 设置允许的头部
+    // Set allowed headers
     if config.allowed_headers.is_empty() {
+        // If no configuration, allow all headers
         cors = cors.allow_headers(Any);
     } else {
         for header in &config.allowed_headers {
@@ -35,16 +38,26 @@ pub fn cors(config: &CorsConfig) -> CorsLayer {
         }
     }
     
-    // 设置预检请求的缓存时间
+    // Set max age for preflight request caching
     cors = cors.max_age(std::time::Duration::from_secs(config.max_age));
     
-    // 允许凭据（cookies等）
+    // Allow credentials (cookies, etc.)
     cors = cors.allow_credentials(true);
     
     cors
 }
 
-/// 生产环境的严格CORS配置
+/// Fully open CORS configuration (equivalent to no CORS restrictions)
+pub fn open_cors() -> CorsLayer {
+    CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any)
+        .allow_credentials(true)
+        .max_age(std::time::Duration::from_secs(86400)) // 24 hours
+}
+
+/// Strict CORS configuration for production
 pub fn strict_cors() -> CorsLayer {
     CorsLayer::new()
         .allow_origin("https://yourdomain.com".parse::<http::HeaderValue>().unwrap())

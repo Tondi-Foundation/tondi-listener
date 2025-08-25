@@ -1,10 +1,9 @@
 pub mod cors;
 pub mod error;
-pub mod limit;
 pub mod trace;
 pub mod security;
 
-use std::{convert::Infallible, time::Duration};
+use std::convert::Infallible;
 
 use axum::{
     error_handling::HandleErrorLayer, extract::Request, response::IntoResponse, routing::Route,
@@ -13,14 +12,13 @@ use tower::{Layer, Service, ServiceBuilder};
 use tower_http::{
     compression::CompressionLayer,
     limit::RequestBodyLimitLayer,
-    timeout::TimeoutLayer,
     trace::TraceLayer,
 };
 
 use crate::{
     ctx::config::{Config, SecurityConfig},
     error::Error,
-    middleware::{cors::cors, error::handler as ErrorHandler, limit::timeout, trace::trace, security::rate_limit},
+    middleware::{cors::cors, error::handler as ErrorHandler, trace::trace, security::rate_limit},
 };
 
 // Restrictive Service Constraints
@@ -78,16 +76,12 @@ pub fn middleware(config: &Config) -> impl Middleware {
         
         // Performance middleware
         .layer(CompressionLayer::new())
-        .layer(TimeoutLayer::new(Duration::from_secs(security.timeout)))
         
         // Error handling
         .layer(HandleErrorLayer::new(ErrorHandler))
         
         // Load balancing
         .load_shed()
-        
-        // Timeout handling
-        .layer(timeout(Duration::from_secs(security.timeout)))
 }
 
 /// Development environment middleware configuration
@@ -98,7 +92,6 @@ pub fn development_middleware() -> impl Middleware {
         .layer(cors(&crate::ctx::config::CorsConfig::default()))
         .layer(HandleErrorLayer::new(ErrorHandler))
         .load_shed()
-        .layer(timeout(Duration::from_secs(30)))
 }
 
 /// Production environment middleware configuration
@@ -112,8 +105,6 @@ pub fn production_middleware(config: &Config) -> impl Middleware {
         .layer(rate_limit(security.rate_limit))
         .layer(RequestBodyLimitLayer::new(security.max_body_size))
         .layer(CompressionLayer::new())
-        .layer(TimeoutLayer::new(Duration::from_secs(security.timeout)))
         .layer(HandleErrorLayer::new(ErrorHandler))
         .load_shed()
-        .layer(timeout(Duration::from_secs(security.timeout)))
 }

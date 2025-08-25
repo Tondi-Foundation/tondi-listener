@@ -10,7 +10,7 @@ use axum::{
 use tokio::sync::RwLock;
 use tower::{Layer, Service};
 
-/// Rate limiter
+/// Rate limiter - 速率限制器
 #[derive(Debug, Clone)]
 pub struct RateLimiter {
     requests: Arc<RwLock<HashMap<String, Vec<Instant>>>>,
@@ -48,7 +48,7 @@ impl RateLimiter {
     }
 }
 
-/// Rate limit middleware
+/// Rate limit middleware - 速率限制中间件
 #[derive(Debug, Clone)]
 pub struct RateLimitLayer {
     rate_limiter: RateLimiter,
@@ -97,14 +97,8 @@ where
         let rate_limiter = self.rate_limiter.clone();
         
         Box::pin(async move {
-            // Get client IP as the key for rate limiting
-            let client_ip = req
-                .extensions()
-                .get::<axum::extract::ConnectInfo<std::net::SocketAddr>>()
-                .map(|info| info.0.ip().to_string())
-                .unwrap_or_else(|| "unknown".to_string());
-
-            if !rate_limiter.is_allowed(&client_ip).await {
+            // Use a global rate limiter instead of IP-based
+            if !rate_limiter.is_allowed("global").await {
                 let response = (
                     http::StatusCode::TOO_MANY_REQUESTS,
                     axum::Json(serde_json::json!({
@@ -124,12 +118,12 @@ where
     }
 }
 
-/// Create rate limit middleware
+/// Create rate limit middleware - 创建速率限制中间件
 pub fn rate_limit(max_requests: u32) -> RateLimitLayer {
     RateLimitLayer::new(max_requests, Duration::from_secs(60))
 }
 
-/// Request validation middleware
+/// Request validation middleware - 请求验证中间件
 #[derive(Debug, Clone)]
 pub struct RequestValidationLayer;
 
@@ -180,23 +174,25 @@ where
                 }
             }
 
-            // Validate content type
-            if let Some(content_type) = req.headers().get("content-type") {
-                let content_type_str = content_type.to_str().unwrap_or("");
-                if !content_type_str.starts_with("application/json") && 
-                   !content_type_str.starts_with("text/plain") &&
-                   !content_type_str.starts_with("multipart/form-data") {
-                    let response = (
-                        http::StatusCode::UNSUPPORTED_MEDIA_TYPE,
-                        axum::Json(serde_json::json!({
-                            "error": {
-                                "code": "UNSUPPORTED_MEDIA_TYPE",
-                                "message": "Unsupported media type"
-                            }
-                        }))
-                    ).into_response();
-                    
-                    return Ok(response);
+            // Validate content type for POST requests
+            if req.method() == http::Method::POST {
+                if let Some(content_type) = req.headers().get("content-type") {
+                    let content_type_str = content_type.to_str().unwrap_or("");
+                    if !content_type_str.starts_with("application/json") && 
+                       !content_type_str.starts_with("text/plain") &&
+                       !content_type_str.starts_with("multipart/form-data") {
+                        let response = (
+                            http::StatusCode::UNSUPPORTED_MEDIA_TYPE,
+                            axum::Json(serde_json::json!({
+                                "error": {
+                                    "code": "UNSUPPORTED_MEDIA_TYPE",
+                                    "message": "Unsupported media type"
+                                }
+                            }))
+                        ).into_response();
+                        
+                        return Ok(response);
+                    }
                 }
             }
 
@@ -205,7 +201,7 @@ where
     }
 }
 
-/// Create request validation middleware
+/// Create request validation middleware - 创建请求验证中间件
 pub fn request_validation() -> RequestValidationLayer {
     RequestValidationLayer
 }

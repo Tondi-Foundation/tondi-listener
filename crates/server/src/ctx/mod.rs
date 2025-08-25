@@ -1,4 +1,5 @@
 pub mod config;
+pub mod event_config;
 pub mod pg_database;
 
 use std::sync::Arc;

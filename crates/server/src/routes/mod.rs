@@ -14,7 +14,16 @@ pub async fn index() -> Html<&'static str> {
 // TODO: Route trait
 pub async fn router(ctx: Context) -> Result<Router> {
     let Context { config, .. } = &ctx;
-    let client_pool = client_pool::extension(&config.grpc_url).await?;
+    
+    // Parse configured event types
+    let event_types = config.events.parse_event_types()
+        .map_err(|e| crate::error::Error::InternalServerError(format!("Invalid event config: {}", e)))?;
+    
+    // Create client pool with configured events
+    let client_pool = client_pool::extension_with_events(
+        &config.grpc_url, 
+        &event_types.into_iter().collect::<Vec<_>>()
+    ).await?;
 
     let router = Router::new()
         .route("/", get(index))
