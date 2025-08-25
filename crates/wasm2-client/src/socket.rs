@@ -134,14 +134,9 @@ impl WrpcEventType {
         }
     }
     
-    /// Check if this is a core blockchain event
-    pub fn is_core_event(&self) -> bool {
-        true // All events are core events now
-    }
-    
     /// Get all event types as a vector
-    pub fn all_events() -> Vec<Self> {
-        vec![
+    pub fn all_events() -> &'static [Self] {
+        &[
             WrpcEventType::BlockAdded,
             WrpcEventType::VirtualChainChanged,
             WrpcEventType::FinalityConflict,
@@ -152,6 +147,22 @@ impl WrpcEventType {
             WrpcEventType::PruningPointUtxoSetOverride,
             WrpcEventType::NewBlockTemplate,
         ]
+    }
+    
+    /// Parse event type string to enum
+    pub fn from_str(event_type: &str) -> WrpcResult<Self> {
+        match event_type {
+            "block-added" => Ok(WrpcEventType::BlockAdded),
+            "virtual-chain-changed" => Ok(WrpcEventType::VirtualChainChanged),
+            "finality-conflict" => Ok(WrpcEventType::FinalityConflict),
+            "finality-conflict-resolved" => Ok(WrpcEventType::FinalityConflictResolved),
+            "utxos-changed" => Ok(WrpcEventType::UtxosChanged),
+            "sink-blue-score-changed" => Ok(WrpcEventType::SinkBlueScoreChanged),
+            "virtual-daa-score-changed" => Ok(WrpcEventType::VirtualDaaScoreChanged),
+            "pruning-point-utxo-set-override" => Ok(WrpcEventType::PruningPointUtxoSetOverride),
+            "new-block-template" => Ok(WrpcEventType::NewBlockTemplate),
+            _ => Err(WrpcError::InvalidEventType(format!("Unknown event type: {}", event_type))),
+        }
     }
 }
 
@@ -171,16 +182,6 @@ impl WrpcEvent {
             data,
             timestamp: js_sys::Date::now() as u64,
         }
-    }
-    
-    /// Check if this is a core blockchain event
-    pub fn is_core_event(&self) -> bool {
-        self.event_type.is_core_event()
-    }
-    
-    /// Check if this is a Tondi-specific event
-    pub fn is_tondi_event(&self) -> bool {
-        false // No Tondi events
     }
 }
 
@@ -208,34 +209,6 @@ impl WrpcResponse {
             id: Some(id),
             result: None,
             error: Some(error),
-        }
-    }
-    
-    /// Check if this is a success response
-    pub fn is_success(&self) -> bool {
-        self.error.is_none() && self.result.is_some()
-    }
-    
-    /// Check if this is an error response
-    pub fn is_error(&self) -> bool {
-        self.error.is_some()
-    }
-    
-    /// Get the result value, returning an error if this is not a success response
-    pub fn get_result(&self) -> WrpcResult<&Value> {
-        if let Some(result) = &self.result {
-            Ok(result)
-        } else {
-            Err(WrpcError::Rpc("No result in response".to_string()))
-        }
-    }
-    
-    /// Get the error value, returning an error if this is not an error response
-    pub fn get_error(&self) -> WrpcResult<&Value> {
-        if let Some(error) = &self.error {
-            Ok(error)
-        } else {
-            Err(WrpcError::Rpc("No error in response".to_string()))
         }
     }
 }
@@ -271,29 +244,16 @@ impl WrpcClient {
         &self.config
     }
     
-    /// Get the number of registered event handlers
-    pub fn event_handler_count(&self) -> usize {
-        self.event_handlers.len()
-    }
-    
-    /// Get the number of pending requests
-    pub fn pending_request_count(&self) -> usize {
-        self.pending_requests.len()
-    }
-    
-    /// Check if the client is currently reconnecting
-    pub fn is_reconnecting(&self) -> bool {
-        self.current_reconnect_attempt > 0
-    }
-    
-    /// Get the current reconnection attempt number
-    pub fn current_reconnect_attempt(&self) -> u32 {
-        self.current_reconnect_attempt
-    }
-    
-    /// Get the maximum number of reconnection attempts
-    pub fn max_reconnect_attempts(&self) -> u32 {
-        self.config.reconnect_attempts
+    /// Get connection statistics
+    pub fn get_stats(&self) -> (bool, usize, usize, bool, u32, u32) {
+        (
+            self.connected,
+            self.event_handlers.len(),
+            self.pending_requests.len(),
+            self.current_reconnect_attempt > 0,
+            self.current_reconnect_attempt,
+            self.config.reconnect_attempts,
+        )
     }
     
     /// Connect to wRPC Server
@@ -406,7 +366,7 @@ impl WrpcClient {
         }
         
         // Validate event type
-        let event_enum = self.parse_event_type(event_type)?;
+        let event_enum = WrpcEventType::from_str(event_type)?;
         
         // Store the handler
         self.event_handlers.insert(event_type.to_string(), handler);
@@ -425,21 +385,7 @@ impl WrpcClient {
         }
     }
     
-    /// Parse event type string to enum
-    fn parse_event_type(&self, event_type: &str) -> WrpcResult<WrpcEventType> {
-        match event_type {
-            "block-added" => Ok(WrpcEventType::BlockAdded),
-            "virtual-chain-changed" => Ok(WrpcEventType::VirtualChainChanged),
-            "finality-conflict" => Ok(WrpcEventType::FinalityConflict),
-            "finality-conflict-resolved" => Ok(WrpcEventType::FinalityConflictResolved),
-            "utxos-changed" => Ok(WrpcEventType::UtxosChanged),
-            "sink-blue-score-changed" => Ok(WrpcEventType::SinkBlueScoreChanged),
-            "virtual-daa-score-changed" => Ok(WrpcEventType::VirtualDaaScoreChanged),
-            "pruning-point-utxo-set-override" => Ok(WrpcEventType::PruningPointUtxoSetOverride),
-            "new-block-template" => Ok(WrpcEventType::NewBlockTemplate),
-            _ => Err(WrpcError::InvalidEventType(format!("Unknown event type: {}", event_type))),
-        }
-    }
+
     
     /// Send RPC Call with Response Handling
     pub async fn call<Request>(&mut self, method: &str, request: Request, callback: js_sys::Function) -> WrpcResult<()>
@@ -589,11 +535,6 @@ impl WrpcClient {
         log::debug!("Reconnection attempts counter reset");
     }
     
-    /// Get reconnection statistics
-    pub fn get_reconnection_stats(&self) -> (u32, u32) {
-        (self.current_reconnect_attempt, self.config.reconnect_attempts)
-    }
-    
     /// Clear pending requests
     pub fn clear_pending_requests(&mut self) {
         self.pending_requests.clear();
@@ -639,13 +580,14 @@ impl WrpcClientJs {
     
     /// Get connection statistics
     pub fn get_stats(&self) -> JsValue {
+        let (connected, event_handlers, pending_requests, reconnecting, current_attempt, max_attempts) = self.inner.get_stats();
         serde_wasm_bindgen::to_value(&serde_json::json!({
-            "connected": self.inner.is_connected(),
-            "event_handlers": self.inner.event_handler_count(),
-            "pending_requests": self.inner.pending_request_count(),
-            "reconnecting": self.inner.is_reconnecting(),
-            "reconnect_attempts": self.inner.current_reconnect_attempt(),
-            "max_reconnect_attempts": self.inner.max_reconnect_attempts(),
+            "connected": connected,
+            "event_handlers": event_handlers,
+            "pending_requests": pending_requests,
+            "reconnecting": reconnecting,
+            "reconnect_attempts": current_attempt,
+            "max_reconnect_attempts": max_attempts,
         })).unwrap_or_default()
     }
     
@@ -703,10 +645,10 @@ impl WrpcClientJs {
     
     /// Get reconnection statistics
     pub fn get_reconnection_stats(&self) -> JsValue {
-        let (current, max) = self.inner.get_reconnection_stats();
+        let (_, _, _, _, current_attempt, max_attempts) = self.inner.get_stats();
         serde_wasm_bindgen::to_value(&serde_json::json!({
-            "current_attempt": current,
-            "max_attempts": max,
+            "current_attempt": current_attempt,
+            "max_attempts": max_attempts,
         })).unwrap_or_default()
     }
 }
