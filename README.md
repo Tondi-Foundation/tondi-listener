@@ -1,7 +1,7 @@
 
 # Tondi Listener
 
-Tondi Listener is a high-performance blockchain listener service that supports multiple protocols (HTTP/2, gRPC, WebSocket) and database backends.
+Tondi Listener is a high-performance blockchain event listener service that supports multiple protocols (HTTP/2, gRPC, WebSocket) and database backends. Unlike traditional blockchain scanners that actively poll for data, Tondi Listener passively listens for real-time blockchain events and processes them efficiently.
 
 ## Features
 
@@ -12,6 +12,7 @@ Tondi Listener is a high-performance blockchain listener service that supports m
 * 🌐 **WebAssembly**: Supports frontend integration
 * 📝 **Logging**: Structured logs and tracing
 * ⚙️ **Configuration**: Flexible, environment variable-driven configuration
+* 🎯 **Event-Driven**: Real-time blockchain event listening and processing
 
 ## Quick Start
 
@@ -67,41 +68,41 @@ The configuration system follows this priority order (highest to lowest):
 
 | Variable             | Description                  | Default                                           |
 | -------------------- | ---------------------------- | ------------------------------------------------- |
-| `TONDI_SCAN_HOST_URL`     | Server listening address     | `127.0.0.1:3000`                                  |
-| `TONDI_SCAN_GRPC_URL`     | gRPC service address         | `grpc://8.210.45.192:16610`                       |
-| `TONDI_SCAN_DATABASE_URL` | PostgreSQL connection string | `postgres://postgres:postgres@127.0.0.1/postgres` |
-| `TONDI_SCAN_ENVIRONMENT`  | Runtime environment          | `development`                                     |
-| `TONDI_SCAN_LOG_LEVEL`    | Log level                    | `info`                                            |
+| `TONDI_LISTENER_HOST_URL`     | Server listening address     | `127.0.0.1:3000`                                  |
+| `TONDI_LISTENER_GRPC_URL`     | gRPC service address         | `grpc://8.210.45.192:16610`                       |
+| `TONDI_LISTENER_DATABASE_URL` | PostgreSQL connection string | `postgres://postgres:postgres@127.0.0.1/postgres` |
+| `TONDI_LISTENER_ENVIRONMENT`  | Runtime environment          | `development`                                     |
+| `TONDI_LISTENER_LOG_LEVEL`    | Log level                    | `info`                                            |
 
 ### Event Configuration
 
 | Variable                    | Description                           | Default                                    |
 | --------------------------- | ------------------------------------- | ------------------------------------------ |
-| `TONDI_SCAN_ENABLED_EVENTS` | Comma-separated blockchain events     | `block-added,utxos-changed,virtual-chain-changed` |
-| `TONDI_SCAN_EVENT_STRATEGY` | Event processing strategy              | `real-time`                               |
-| `TONDI_SCAN_BATCH_SIZE`     | Batch size for batch processing       | `100`                                     |
-| `TONDI_SCAN_BATCH_TIMEOUT_MS` | Batch timeout in milliseconds         | `100`                                     |
-| `TONDI_SCAN_BUFFER_SIZE`    | Event buffer size                      | `1000`                                    |
-| `TONDI_SCAN_ENABLE_DEDUPLICATION` | Enable event deduplication           | `true`                                    |
-| `TONDI_SCAN_HIGH_PRIORITY_EVENTS` | High priority events (comma-separated) | `block-added,utxos-changed`               |
-| `TONDI_SCAN_MEDIUM_PRIORITY_EVENTS` | Medium priority events (comma-separated) | `virtual-chain-changed`                   |
-| `TONDI_SCAN_LOW_PRIORITY_EVENTS` | Low priority events (comma-separated) | `new-block-template`                      |
+| `TONDI_LISTENER_ENABLED_EVENTS` | Comma-separated blockchain events     | `block-added,utxos-changed,virtual-chain-changed` |
+| `TONDI_LISTENER_EVENT_STRATEGY` | Event processing strategy              | `real-time`                               |
+| `TONDI_LISTENER_BATCH_SIZE`     | Batch size for batch processing       | `100`                                     |
+| `TONDI_LISTENER_BATCH_TIMEOUT_MS` | Batch timeout in milliseconds         | `100`                                     |
+| `TONDI_LISTENER_BUFFER_SIZE`    | Event buffer size                      | `1000`                                    |
+| `TONDI_LISTENER_ENABLE_DEDUPLICATION` | Enable event deduplication           | `true`                                    |
+| `TONDI_LISTENER_HIGH_PRIORITY_EVENTS` | High priority events (comma-separated) | `block-added,utxos-changed`               |
+| `TONDI_LISTENER_MEDIUM_PRIORITY_EVENTS` | Medium priority events (comma-separated) | `virtual-chain-changed`                   |
+| `TONDI_LISTENER_LOW_PRIORITY_EVENTS` | Low priority events (comma-separated) | `new-block-template`                      |
 
 ### CORS Configuration
 
 | Variable                    | Description                           | Default                                    |
 | --------------------------- | ------------------------------------- | ------------------------------------------ |
-| `TONDI_SCAN_CORS_ALLOWED_ORIGINS` | Allowed origins (use `*` for all)    | `*` (allow all)                            |
-| `TONDI_SCAN_CORS_ALLOWED_METHODS` | Allowed HTTP methods (use `*` for all) | `*` (allow all)                            |
-| `TONDI_SCAN_CORS_ALLOWED_HEADERS` | Allowed headers (use `*` for all)     | `*` (allow all)                            |
-| `TONDI_SCAN_CORS_MAX_AGE`  | Preflight cache time in seconds       | `3600`                                    |
+| `TONDI_LISTENER_CORS_ALLOWED_ORIGINS` | Allowed origins (use `*` for all)    | `*` (allow all)                            |
+| `TONDI_LISTENER_CORS_ALLOWED_METHODS` | Allowed HTTP methods (use `*` for all) | `*` (allow all)                            |
+| `TONDI_LISTENER_CORS_ALLOWED_HEADERS` | Allowed headers (use `*` for all)     | `*` (allow all)                            |
+| `TONDI_LISTENER_CORS_MAX_AGE`  | Preflight cache time in seconds       | `3600`                                    |
 
 ### Security Configuration
 
 | Variable                    | Description                           | Default                                    |
 | --------------------------- | ------------------------------------- | ------------------------------------------ |
-| `TONDI_SCAN_RATE_LIMIT`    | Rate limit (requests per minute)      | `100`                                     |
-| `TONDI_SCAN_MAX_BODY_SIZE` | Maximum request body size in bytes    | `10485760` (10MB)                          |
+| `TONDI_LISTENER_RATE_LIMIT`    | Rate limit (requests per minute)      | `100`                                     |
+| `TONDI_LISTENER_MAX_BODY_SIZE` | Maximum request body size in bytes    | `10485760` (10MB)                          |
 
 ### Configuration File
 
@@ -166,8 +167,8 @@ cargo build --target wasm32-unknown-unknown
 1. Set environment variables
 
 ```bash
-export TONDI_SCAN_ENVIRONMENT=production
-export TONDI_SCAN_LOG_LEVEL=warn
+export TONDI_LISTENER_ENVIRONMENT=production
+export TONDI_LISTENER_LOG_LEVEL=warn
 ```
 
 2. Use production middleware
@@ -243,22 +244,22 @@ encoding = "borsh"
 
 ```bash
 # Enable wRPC
-export TONDI_SCAN_WRPC_ENABLED=true
+export TONDI_LISTENER_WRPC_ENABLED=true
 
 # wRPC protocol
-export TONDI_SCAN_WRPC_PROTOCOL=ws
+export TONDI_LISTENER_WRPC_PROTOCOL=ws
 
 # wRPC host
-export TONDI_SCAN_WRPC_HOST=8.210.45.192
+export TONDI_LISTENER_WRPC_HOST=8.210.45.192
 
 # wRPC port (0 = use default)
-export TONDI_SCAN_WRPC_PORT=0
+export TONDI_LISTENER_WRPC_PORT=0
 
 # wRPC network
-export TONDI_SCAN_WRPC_NETWORK=devnet
+export TONDI_LISTENER_WRPC_NETWORK=devnet
 
 # wRPC encoding
-export TONDI_SCAN_WRPC_ENCODING=borsh
+export TONDI_LISTENER_WRPC_ENCODING=borsh
 ```
 
 #### wRPC vs gRPC
@@ -294,28 +295,28 @@ export TONDI_SCAN_WRPC_ENCODING=borsh
 #### Production Environment
 ```bash
 # Enable only core events
-export TONDI_SCAN_ENABLED_EVENTS="block-added,utxos-changed"
+export TONDI_LISTENER_ENABLED_EVENTS="block-added,utxos-changed"
 
 # Use batch processing
-export TONDI_SCAN_EVENT_STRATEGY="batch"
-export TONDI_SCAN_BATCH_SIZE=500
-export TONDI_SCAN_BATCH_TIMEOUT_MS=50
+export TONDI_LISTENER_EVENT_STRATEGY="batch"
+export TONDI_LISTENER_BATCH_SIZE=500
+export TONDI_LISTENER_BATCH_TIMEOUT_MS=50
 
 # Optimize buffer
-export TONDI_SCAN_BUFFER_SIZE=2000
-export TONDI_SCAN_ENABLE_DEDUPLICATION=true
+export TONDI_LISTENER_BUFFER_SIZE=2000
+export TONDI_LISTENER_ENABLE_DEDUPLICATION=true
 ```
 
 #### Development Environment
 ```bash
 # Enable more events for testing
-export TONDI_SCAN_ENABLED_EVENTS="block-added,utxos-changed,virtual-chain-changed,new-block-template"
+export TONDI_LISTENER_ENABLED_EVENTS="block-added,utxos-changed,virtual-chain-changed,new-block-template"
 
 # Use real-time processing
-export TONDI_SCAN_EVENT_STRATEGY="real-time"
+export TONDI_LISTENER_EVENT_STRATEGY="real-time"
 
 # Smaller buffer for development
-export TONDI_SCAN_BUFFER_SIZE=500
+export TONDI_LISTENER_BUFFER_SIZE=500
 ```
 
 ### CORS Configuration Examples
@@ -323,17 +324,30 @@ export TONDI_SCAN_BUFFER_SIZE=500
 #### Allow All Origins (No CORS Restrictions)
 ```bash
 # Method 1: Set to wildcard
-export TONDI_SCAN_CORS_ALLOWED_ORIGINS="*"
+export TONDI_LISTENER_CORS_ALLOWED_ORIGINS="*"
 
 # Method 2: Leave empty
-export TONDI_SCAN_CORS_ALLOWED_ORIGINS=""
+export TONDI_LISTENER_CORS_ALLOWED_ORIGINS=""
 ```
 
 #### Restrict Specific Origins
 ```bash
-export TONDI_SCAN_CORS_ALLOWED_ORIGINS="http://localhost:3000,https://yourdomain.com"
-export TONDI_SCAN_CORS_ALLOWED_METHODS="GET,POST"
-export TONDI_SCAN_CORS_ALLOWED_HEADERS="Content-Type,Authorization"
+export TONDI_LISTENER_CORS_ALLOWED_ORIGINS="http://localhost:3000,https://yourdomain.com"
+export TONDI_LISTENER_CORS_ALLOWED_METHODS="GET,POST"
+export TONDI_LISTENER_CORS_ALLOWED_HEADERS="Content-Type,Authorization"
 ```
+
+## Why "Listener" Instead of "Scanner"?
+
+Tondi Listener is designed as an **event-driven service** rather than a traditional blockchain scanner:
+
+- **🔍 Scanner**: Actively polls blockchain nodes for data at regular intervals
+- **🎧 Listener**: Passively waits for blockchain events and processes them in real-time
+
+This design provides:
+- **Better Performance**: No unnecessary polling when blockchain is idle
+- **Real-time Updates**: Immediate response to blockchain state changes
+- **Resource Efficiency**: Lower CPU and network usage
+- **Event-driven Architecture**: Natural fit for modern reactive systems
 
 **Note**: This is a project under development, APIs may change.
