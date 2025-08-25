@@ -2,7 +2,6 @@ use std::{io::Error as StdIoError, net::AddrParseError as StdNetAddrParseError};
 
 use axum::response::{IntoResponse, Response as AxumResponse};
 use http::StatusCode;
-use nill::Nil;
 use tondi_scan_db::{
     diesel::{
         r2d2::PoolError as DieselR2d2PoolError,
@@ -14,7 +13,7 @@ use tondi_scan_http2_client::tonic::transport::Error as TonicTransportError;
 
 use crate::{
     ctx::config::ConfigError,
-    shared::{data::Inner as DataInner, pool::Error as ClientPoolError},
+    shared::pool::Error as ClientPoolError,
 };
 
 #[derive(Debug, thiserror::Error)]
@@ -98,19 +97,19 @@ impl Error {
     pub fn user_message(&self) -> String {
         match self {
             Self::Config(e) => format!("System configuration error: {}", e),
-            Self::StdIoError(e) => "System internal error".to_string(),
-            Self::StdNetAddrParseError(e) => format!("Invalid address format: {}", e),
-            Self::TonicTransportError(_) => "Service temporarily unavailable, please try again later".to_string(),
-            Self::DieselR2d2PoolError(_) => "Database service temporarily unavailable, please try again later".to_string(),
-            Self::DieselConnectionError(_) => "Database connection failed, please try again later".to_string(),
-            Self::DieselError(_) => "Database operation failed".to_string(),
+            Self::StdIoError(_e) => "System internal error".to_string(),
+            Self::StdNetAddrParseError(e) => format!("Invalid network address: {}", e),
+            Self::TonicTransportError(e) => format!("Network connection error: {}", e),
+            Self::DieselR2d2PoolError(e) => format!("Database connection pool error: {}", e),
+            Self::DieselConnectionError(e) => format!("Database connection error: {}", e),
+            Self::DieselError(e) => format!("Database operation error: {}", e),
             Self::TondiScanDbError(e) => format!("Database error: {}", e),
-            Self::ClientPoolError(_) => "Client service temporarily unavailable, please try again later".to_string(),
-            Self::NotFound(resource) => format!("Requested resource '{}' does not exist", resource),
-            Self::Forbidden(reason) => format!("Access denied: {}", reason),
-            Self::BadRequest(details) => format!("Invalid request parameters: {}", details),
-            Self::InternalServerError(_) => "Server internal error, please try again later".to_string(),
-            Self::ServiceUnavailable(_) => "Service temporarily unavailable, please try again later".to_string(),
+            Self::ClientPoolError(e) => format!("Client pool error: {}", e),
+            Self::NotFound(msg) => format!("Resource not found: {}", msg),
+            Self::Forbidden(msg) => format!("Access denied: {}", msg),
+            Self::BadRequest(msg) => format!("Invalid request: {}", msg),
+            Self::InternalServerError(msg) => format!("Internal server error: {}", msg),
+            Self::ServiceUnavailable(msg) => format!("Service temporarily unavailable: {}", msg),
             Self::Generic(msg) => msg.clone(),
         }
     }
@@ -163,39 +162,5 @@ impl IntoResponse for Error {
         (status, axum::Json(error_response)).into_response()
     }
 }
-
-// Convenient error construction macros
-macro_rules! err {
-    ($($arg:tt)*) => {
-        Err($crate::error::Error::Generic(format!($($arg)*)))
-    }
-}
-
-macro_rules! not_found {
-    ($($arg:tt)*) => {
-        Err($crate::error::Error::NotFound(format!($($arg)*)))
-    }
-}
-
-macro_rules! bad_request {
-    ($($arg:tt)*) => {
-        Err($crate::error::Error::BadRequest(format!($($arg)*)))
-    }
-}
-
-macro_rules! forbidden {
-    ($($arg:tt)*) => {
-        Err($crate::error::Error::Forbidden(format!($($arg)*)))
-    }
-}
-
-macro_rules! internal_error {
-    ($($arg:tt)*) => {
-        Err($crate::error::Error::InternalServerError(format!($($arg)*)))
-    }
-}
-
-#[allow(unused_imports)]
-pub(crate) use {bad_request, err, forbidden, internal_error, not_found};
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

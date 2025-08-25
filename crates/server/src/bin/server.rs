@@ -1,5 +1,4 @@
 use nill::{Nil, nil};
-use tower_http::cors::CorsLayer;
 use tondi_scan_http2_client::{
     tonic::{codec::CompressionEncoding::Gzip, transport::Server},
     web::GrpcWebLayer,
@@ -36,13 +35,13 @@ async fn main() -> Result<Nil> {
         middleware::cors::cors(ctx.cors_config())
     };
 
-    Server::builder()
+    let server = Server::builder()
         .accept_http1(true)
         .layer(cors_layer)
-        .layer(GrpcWebLayer::new())
-        .add_service(service)
-        .serve(socket)
-        .await?;
+        .layer(GrpcWebLayer::new());
+
+    // Use the service directly
+    server.serve(socket, service).await?;
 
     info!("Server stopped");
     Ok(nil)

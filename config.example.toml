@@ -58,3 +58,25 @@ low_priority = ["new-block-template"]
 # Event processing configuration
 buffer_size = 1000
 enable_deduplication = true
+
+[server.wrpc]
+# wRPC配置 (如果enabled=true，将优先使用wRPC而不是gRPC)
+enabled = true
+
+# wRPC协议类型: "ws", "wss", "grpc"
+protocol = "ws"
+
+# wRPC节点地址
+host = "8.210.45.192"
+
+# wRPC端口 (如果为0，将使用网络类型的默认端口)
+# devnet + borsh = 17610, devnet + json = 18610
+# mainnet + borsh = 17110, mainnet + json = 18110
+# testnet + borsh = 17210, testnet + json = 18210
+port = 0
+
+# 网络类型: "mainnet", "testnet", "devnet", "simnet"
+network = "devnet"
+
+# 编码类型: "borsh", "json"
+encoding = "borsh"

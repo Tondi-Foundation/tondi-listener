@@ -5,7 +5,6 @@ use tondi_scan_http2_client::{
     },
     tonic::{Request, Response, Status},
 };
-use nill::{Nil, nil};
 
 pub fn service() -> PingPongServiceServer<PingpongService> {
     PingPongServiceServer::new(PingpongService)

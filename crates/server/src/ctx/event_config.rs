@@ -51,7 +51,7 @@ impl std::fmt::Display for EventType {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct EventConfig {
     /// 启用的区块链事件类型
     #[serde(default = "default_enabled_events")]
@@ -154,6 +154,23 @@ impl EventConfig {
         Ok(())
     }
     
+    /// Get all available event types
+    pub fn get_all_event_types() -> Vec<EventType> {
+        vec![
+            EventType::BlockAdded,
+            EventType::VirtualChainChanged,
+            EventType::FinalityConflict,
+            EventType::FinalityConflictResolved,
+            EventType::UtxosChanged,
+            EventType::SinkBlueScoreChanged,
+            EventType::VirtualDaaScoreChanged,
+            EventType::PruningPointUtxoSetOverride,
+            EventType::NewBlockTemplate,
+        ]
+    }
+}
+
+impl EventType {
     /// Get all available event types
     pub fn get_all_event_types() -> Vec<EventType> {
         vec![

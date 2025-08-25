@@ -32,11 +32,19 @@ tower      = { workspace = true, features = ["load-shed"] }
 tower-http = { workspace = true, features = ["cors", "timeout", "trace", "compression-full", "limit"] }
 http       = { workspace = true }
 
+# 添加缺失的依赖
+diesel = { workspace = true, features = ["postgres", "r2d2", "chrono"] }
+hex = { workspace = true }
+
+# 修复版本问题 - 使用统一的版本
 tondi-grpc-client = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
-tondi-grpc-core   = { version = "0.17.0", git = "ssh://github.com/AvatoLabs/Tondi.git", branch = "main" }
+tondi-grpc-core   = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 tondi-notify      = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 tondi-rpc-core    = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
 tondi-utils       = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+tondi-wrpc-wasm   = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+tondi-consensus-core = { version = "0.17.0", git = "ssh://git@github.com/AvatoLabs/Tondi.git", branch = "main" }
+workflow-rpc      = "0.18.0"
 
 
 [build-dependencies]

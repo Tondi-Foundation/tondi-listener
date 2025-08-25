@@ -203,6 +203,75 @@ The system supports the following blockchain events that can be selectively enab
 | `pruning-point-utxo-set-override` | Pruning point UTXO set override | ❌ |
 | `new-block-template` | New block template | ❌ |
 
+### wRPC Configuration
+
+The system now supports both gRPC and wRPC (WebSocket RPC) protocols. wRPC is particularly useful for Web environments and provides better real-time event handling.
+
+#### wRPC Ports by Network and Encoding
+
+| Network | Borsh Encoding | JSON Encoding |
+|---------|----------------|----------------|
+| Mainnet | 17110 | 18110 |
+| Testnet | 17210 | 18210 |
+| Devnet  | 17610 | 18610 |
+| Simnet  | 17510 | 18510 |
+
+#### wRPC Configuration Options
+
+```toml
+[server.wrpc]
+# Enable wRPC (if true, wRPC will be used instead of gRPC)
+enabled = false
+
+# Protocol: "ws", "wss", "grpc"
+protocol = "ws"
+
+# Node host address
+host = "8.210.45.192"
+
+# Port (0 = use default for network/encoding)
+port = 0
+
+# Network type: "mainnet", "testnet", "devnet", "simnet"
+network = "devnet"
+
+# Encoding: "borsh", "json"
+encoding = "borsh"
+```
+
+#### Environment Variables for wRPC
+
+```bash
+# Enable wRPC
+export TONDI_SCAN_WRPC_ENABLED=true
+
+# wRPC protocol
+export TONDI_SCAN_WRPC_PROTOCOL=ws
+
+# wRPC host
+export TONDI_SCAN_WRPC_HOST=8.210.45.192
+
+# wRPC port (0 = use default)
+export TONDI_SCAN_WRPC_PORT=0
+
+# wRPC network
+export TONDI_SCAN_WRPC_NETWORK=devnet
+
+# wRPC encoding
+export TONDI_SCAN_WRPC_ENCODING=borsh
+```
+
+#### wRPC vs gRPC
+
+| Feature | gRPC | wRPC |
+|---------|------|------|
+| Protocol | HTTP/2 | WebSocket |
+| Port (Devnet) | 16610 | 17610 (Borsh) / 18610 (JSON) |
+| Web Support | Limited | Full (WASM) |
+| Real-time Events | Good | Excellent |
+| Connection Management | Manual | Automatic |
+| Reconnection | Manual | Built-in |
+
 ### Event Processing Strategies
 
 #### Real-Time Strategy (Default)

@@ -10,7 +10,11 @@ pub fn cors(config: &CorsConfig) -> CorsLayer {
         cors = cors.allow_origin(Any);
     } else {
         for origin in &config.allowed_origins {
-            cors = cors.allow_origin(origin.parse().unwrap_or_else(|_| Any));
+            if let Ok(header_value) = origin.parse::<http::HeaderValue>() {
+                cors = cors.allow_origin(header_value);
+            } else {
+                cors = cors.allow_origin(Any);
+            }
         }
     }
     

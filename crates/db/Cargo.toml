@@ -23,3 +23,4 @@ workspace = true
 diesel = { workspace = true, features = ["postgres", "r2d2", "chrono", "serde_json"] }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
+hex = "0.4"
