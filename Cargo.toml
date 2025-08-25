@@ -48,6 +48,7 @@ tracing-browser-subscriber = { default-features = false, version = "0.2" }
 tracing-subscriber         = { default-features = false, version = "0.3" }
 wasm-bindgen               = { default-features = false, version = "0.2" }
 wasm-bindgen-futures       = { default-features = false, version = "0.4" }
+wasm-bindgen-test          = { default-features = false, version = "0.3" }
 wasm-streams               = { default-features = false, version = "0.4" }
 web-sys                    = { default-features = false, version = "0.3" }
 
