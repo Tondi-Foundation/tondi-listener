@@ -102,7 +102,7 @@ fn default_events() -> Vec<String> {
 /// 5. 与服务器端配置结构保持一致，避免配置不一致问题
 /// 6. 从统一的 config.toml 文件读取配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TondiScanConfig {
+pub struct TondiListenerConfig {
     pub url: Option<String>,
     pub encoding: Option<String>,
     pub network_id: Option<String>,
@@ -118,7 +118,7 @@ pub struct TondiScanConfig {
     pub enable_console_log: Option<bool>,
 }
 
-impl Default for TondiScanConfig {
+impl Default for TondiListenerConfig {
     fn default() -> Self {
         Self {
             url: None, // No longer hardcode URL, let users provide it through configuration file or parameters
@@ -143,7 +143,7 @@ impl Default for TondiScanConfig {
     }
 }
 
-impl TondiScanConfig {
+impl TondiListenerConfig {
     /// 根据网络类型和编码类型计算默认端口
     pub fn get_default_port(&self) -> u16 {
         let network = self.network_id.as_deref().unwrap_or("devnet");
@@ -195,10 +195,10 @@ impl TondiScanConfig {
     }
 }
 
-impl TryFrom<TondiScanConfig> for tondi_wrpc_wasm::RpcConfig {
+impl TryFrom<TondiListenerConfig> for tondi_wrpc_wasm::RpcConfig {
     type Error = String;
 
-    fn try_from(config: TondiScanConfig) -> Result<Self, Self::Error> {
+    fn try_from(config: TondiListenerConfig) -> Result<Self, Self::Error> {
         let encoding = match config.encoding.as_deref() {
             Some("borsh") => Some(Encoding::Borsh),
             Some("json") => Some(Encoding::SerdeJson),
@@ -221,20 +221,20 @@ impl TryFrom<TondiScanConfig> for tondi_wrpc_wasm::RpcConfig {
 
 /// Tondi Listener WASM Client
 #[wasm_bindgen]
-pub struct TondiScanClient {
+pub struct TondiListenerClient {
     inner: RpcClient,
-    config: TondiScanConfig,
+    config: TondiListenerConfig,
     event_handlers: HashMap<String, js_sys::Function>,
     auto_reconnect_enabled: bool,
     reconnect_attempts: u32,
 }
 
 #[wasm_bindgen]
-impl TondiScanClient {
+impl TondiListenerClient {
     /// Create new Tondi Listener Client
     #[wasm_bindgen(constructor)]
-    pub fn new(config: JsValue) -> Result<TondiScanClient, JsValue> {
-        let config: TondiScanConfig = serde_wasm_bindgen::from_value(config)
+    pub fn new(config: JsValue) -> Result<TondiListenerClient, JsValue> {
+        let config: TondiListenerConfig = serde_wasm_bindgen::from_value(config)
             .map_err(|e| format!("Invalid configuration: {}", e))?;
         
         let rpc_config: tondi_wrpc_wasm::RpcConfig = config.clone().try_into()
@@ -261,7 +261,7 @@ impl TondiScanClient {
     /// Update configuration
     #[wasm_bindgen(js_name = updateConfig)]
     pub fn update_config(&mut self, new_config: JsValue) -> Result<(), JsValue> {
-        let new_config: TondiScanConfig = serde_wasm_bindgen::from_value(new_config)
+        let new_config: TondiListenerConfig = serde_wasm_bindgen::from_value(new_config)
             .map_err(|e| format!("Invalid configuration: {}", e))?;
         
         self.config = new_config;
@@ -498,13 +498,13 @@ mod tests {
 
     #[test]
     fn test_port_calculation() {
-        let config = TondiScanConfig::default();
+        let config = TondiListenerConfig::default();
         
         // Test default port (devnet + borsh)
         assert_eq!(config.get_default_port(), wrpc_ports::DEVNET_BORSH);
         
         // Test different network types and encoding combinations
-        let mut config = TondiScanConfig::default();
+        let mut config = TondiListenerConfig::default();
         config.network_id = Some("mainnet".to_string());
         config.encoding = Some("borsh".to_string());
         assert_eq!(config.get_default_port(), wrpc_ports::MAINNET_BORSH);
@@ -529,20 +529,20 @@ mod tests {
 
     #[test]
     fn test_url_building() {
-        let config = TondiScanConfig::default();
+        let config = TondiListenerConfig::default();
         
         // Test automatically built URL
         let url = config.build_url();
         assert_eq!(url, "wss://8.210.45.192:17610"); // devnet + borsh
         
         // Test custom URL
-        let mut config = TondiScanConfig::default();
+        let mut config = TondiListenerConfig::default();
         config.url = Some("wss://custom.host:8080".to_string());
         let url = config.build_url();
         assert_eq!(url, "wss://custom.host:8080");
         
         // Test different protocol
-        let mut config = TondiScanConfig::default();
+        let mut config = TondiListenerConfig::default();
         config.protocol = Some("ws".to_string());
         let url = config.build_url();
         assert_eq!(url, "ws://8.210.45.192:17610");
@@ -550,7 +550,7 @@ mod tests {
 
     #[test]
     fn test_config_consistency() {
-        let config = TondiScanConfig::default();
+        let config = TondiListenerConfig::default();
         
         // Verify default configuration matches server-side setup
         assert_eq!(config.network_id, Some("devnet".to_string()));

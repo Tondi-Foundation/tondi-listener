@@ -7,7 +7,7 @@ use tondi_listener_db::{
         r2d2::PoolError as DieselR2d2PoolError,
         result::{ConnectionError as DieselConnectionError, Error as DieselError},
     },
-    error::Error as TondiScanDbError,
+    error::Error as TondiListenerDbError,
 };
 use tondi_listener_http2_client::tonic::transport::Error as TonicTransportError;
 
@@ -44,7 +44,7 @@ pub enum Error {
     DieselError(#[from] DieselError),
 
     #[error("Database operation error: {0}")]
-    TondiScanDbError(#[from] TondiScanDbError),
+    TondiListenerDbError(#[from] TondiListenerDbError),
 
     // Client pool error
     #[error("Client pool error: {0}")]
@@ -82,7 +82,7 @@ impl Error {
             Self::DieselR2d2PoolError(_) => StatusCode::SERVICE_UNAVAILABLE,
             Self::DieselConnectionError(_) => StatusCode::SERVICE_UNAVAILABLE,
             Self::DieselError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::TondiScanDbError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::TondiListenerDbError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             Self::ClientPoolError(_) => StatusCode::SERVICE_UNAVAILABLE,
             Self::NotFound(_) => StatusCode::NOT_FOUND,
             Self::Forbidden(_) => StatusCode::FORBIDDEN,
@@ -103,7 +103,7 @@ impl Error {
             Self::DieselR2d2PoolError(e) => format!("Database connection pool error: {}", e),
             Self::DieselConnectionError(e) => format!("Database connection error: {}", e),
             Self::DieselError(e) => format!("Database operation error: {}", e),
-            Self::TondiScanDbError(e) => format!("Database error: {}", e),
+            Self::TondiListenerDbError(e) => format!("Database error: {}", e),
             Self::ClientPoolError(e) => format!("Client pool error: {}", e),
             Self::NotFound(msg) => format!("Resource not found: {}", msg),
             Self::Forbidden(msg) => format!("Access denied: {}", msg),
@@ -124,7 +124,7 @@ impl Error {
             Self::DieselR2d2PoolError(_) => "DB_POOL_ERROR",
             Self::DieselConnectionError(_) => "DB_CONNECTION_ERROR",
             Self::DieselError(_) => "DB_QUERY_ERROR",
-            Self::TondiScanDbError(_) => "DB_OPERATION_ERROR",
+            Self::TondiListenerDbError(_) => "DB_OPERATION_ERROR",
             Self::ClientPoolError(_) => "CLIENT_POOL_ERROR",
             Self::NotFound(_) => "NOT_FOUND",
             Self::Forbidden(_) => "FORBIDDEN",

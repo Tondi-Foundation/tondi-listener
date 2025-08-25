@@ -336,18 +336,3 @@ export TONDI_LISTENER_CORS_ALLOWED_ORIGINS="http://localhost:3000,https://yourdo
 export TONDI_LISTENER_CORS_ALLOWED_METHODS="GET,POST"
 export TONDI_LISTENER_CORS_ALLOWED_HEADERS="Content-Type,Authorization"
 ```
-
-## Why "Listener" Instead of "Scanner"?
-
-Tondi Listener is designed as an **event-driven service** rather than a traditional blockchain scanner:
-
-- **🔍 Scanner**: Actively polls blockchain nodes for data at regular intervals
-- **🎧 Listener**: Passively waits for blockchain events and processes them in real-time
-
-This design provides:
-- **Better Performance**: No unnecessary polling when blockchain is idle
-- **Real-time Updates**: Immediate response to blockchain state changes
-- **Resource Efficiency**: Lower CPU and network usage
-- **Event-driven Architecture**: Natural fit for modern reactive systems
-
-**Note**: This is a project under development, APIs may change.

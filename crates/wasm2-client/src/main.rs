@@ -1,7 +1,7 @@
 use nill::{Nil, nil};
 use wasm_bindgen_futures::spawn_local;
 use tondi_listener_library::log::{info, init_tracing_browser_subscriber_log};
-use tondi_listener_wasm2_client::{error::Result, client::TondiScanClient};
+use tondi_listener_wasm2_client::{error::Result, client::TondiListenerClient};
 
 // #[tokio::main(flavor = "current_thread")] async
 fn main() -> Result<Nil> {
@@ -19,7 +19,7 @@ fn main() -> Result<Nil> {
             // devnet + borsh = 17610
         })).unwrap();
         
-        let client = TondiScanClient::new(config).unwrap();
+        let client = TondiListenerClient::new(config).unwrap();
         
         info!("Tondi Listener client created");
         

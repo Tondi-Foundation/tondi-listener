@@ -51,7 +51,7 @@ const config = {
     // 将自动构建 URL: wss://8.210.45.192:17610
 };
 
-const client = new TondiScanClient(config);
+const client = new TondiListenerClient(config);
 ```
 
 #### 使用自定义配置
@@ -62,7 +62,7 @@ const config = {
     network_id: "mainnet"
 };
 
-const client = new TondiScanClient(config);
+const client = new TondiListenerClient(config);
 ```
 
 #### 使用统一配置文件
