@@ -1,21 +1,26 @@
-use xscan_h2c::{
+use tondi_scan_h2c::{
     protowire::{
-        Ping, Pong,
         ping_pong_service_server::{PingPongService, PingPongServiceServer},
+        Ping, Pong,
     },
-    tonic::{Request, Response, Status, async_trait},
+    tonic::{Request, Response, Status},
 };
+use nill::{Nil, nil};
 
-#[derive(Debug, Default)]
-pub struct PingPongServiceImpl {}
-
-#[async_trait]
-impl PingPongService for PingPongServiceImpl {
-    async fn pingpong(&self, _: Request<Ping>) -> Result<Response<Pong>, Status> {
-        Ok(Response::new(Pong::default()))
-    }
+pub fn service() -> PingPongServiceServer<PingpongService> {
+    PingPongServiceServer::new(PingpongService)
 }
 
-pub fn service() -> PingPongServiceServer<PingPongServiceImpl> {
-    PingPongServiceServer::new(PingPongServiceImpl::default())
+#[derive(Debug)]
+pub struct PingpongService;
+
+#[tonic::async_trait]
+impl PingPongService for PingpongService {
+    async fn pingpong(&self, request: Request<Ping>) -> Result<Response<Pong>, Status> {
+        let ping = request.into_inner();
+        let pong = Pong {
+            id: format!("Pong: {}", ping.id),
+        };
+        Ok(Response::new(pong))
+    }
 }

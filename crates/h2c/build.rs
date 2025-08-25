@@ -1,8 +1,5 @@
 use tonic_prost_build::{Config, configure};
 
-const PROTO_DIR: &str = env!("PROTOWIRE_DIR");
-const PROTO_GEN: &str = env!("PROTO_GEN_DIR");
-
 const RKYV_CODEC: &str = "crate::codec::rkyv::Codec";
 const RKYV_ATTR: &str = "#[derive(rkyv::Archive, rkyv::Deserialize, rkyv::Serialize)]";
 
@@ -12,7 +9,8 @@ struct Compiler {}
 impl Compiler {
     fn compile(dir: &str, protos: &[&str]) -> std::io::Result<()> {
         let mut config = Config::new();
-        let mut builder = configure().out_dir(PROTO_GEN);
+        let mut builder = configure().out_dir("target/proto");
+        
         if cfg!(feature = "rkyv-codec") {
             config.type_attribute(".", RKYV_ATTR);
             builder = builder.codec_path(RKYV_CODEC);
@@ -24,10 +22,24 @@ impl Compiler {
 }
 
 fn main() -> std::io::Result<()> {
+    // Create the output directory if it doesn't exist
+    std::fs::create_dir_all("target/proto")?;
+    
+    // Get the workspace root directory (go up two levels from crates/h2c)
+    let current_dir = std::env::current_dir()?;
+    let workspace_root = current_dir
+        .parent()
+        .ok_or(std::io::Error::new(std::io::ErrorKind::NotFound, "Cannot find parent directory"))?
+        .parent()
+        .ok_or(std::io::Error::new(std::io::ErrorKind::NotFound, "Cannot find workspace root"))?;
+    std::env::set_current_dir(&workspace_root)?;
+    
+    // Create the output directory if it doesn't exist
+    std::fs::create_dir_all("target/proto")?;
+    
     // Pingpong
-    Compiler::compile(PROTO_DIR, &["pingpong"])?;
+    Compiler::compile("protowire", &["pingpong"])?;
     // Explorer
-    let explorer = format!("{PROTO_DIR}/explorer");
-    Compiler::compile(&explorer, &["lib", "transaction", "block", "service"])?;
+    Compiler::compile("protowire/explorer", &["lib", "transaction", "block", "service"])?;
     Ok(())
 }

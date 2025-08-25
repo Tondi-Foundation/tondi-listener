@@ -1,22 +1,15 @@
-use std::str::FromStr;
-
-use http::Uri;
-use tower::ServiceBuilder;
-use xscan_h2c::{
-    protowire::{Ping, Pong, ping_pong_service_client::PingPongServiceClient},
-    tonic::codec::CompressionEncoding::Gzip,
-    web::GrpcWebClientLayer,
+use nill::{Nil, nil};
+use tondi_scan_h2c::{
+    protowire::{Ping, Pong},
+    tonic::Status,
 };
+use wasm_bindgen::prelude::*;
 
-use crate::{error::Result, fetch::Fetch};
+use crate::error::Result;
 
 pub async fn pingpong(ping: Ping) -> Result<Pong> {
-    let uri = Uri::from_str("http://127.0.0.1:3000")?;
-    let service = ServiceBuilder::new().layer(GrpcWebClientLayer::new()).service(Fetch::new());
-
-    let mut client = PingPongServiceClient::with_origin(service, uri);
-    client = client.accept_compressed(Gzip).send_compressed(Gzip);
-
-    let response = client.pingpong(ping).await?;
-    Ok(response.into_inner())
+    let pong = Pong {
+        id: format!("Pong: {}", ping.id),
+    };
+    Ok(pong)
 }

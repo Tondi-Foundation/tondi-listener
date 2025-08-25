@@ -1,7 +1,7 @@
 [package]
-name = "xscan-w2c"
+name = "tondi-scan-w2c"
 
-description = "xscan-w2c"
+description = "Tondi Scan WebAssembly Client"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -10,31 +10,23 @@ version     = { workspace = true }
 [features]
 default = []
 
-console-backtrace = ["dep:console_error_panic_hook"]
+
+[dependencies]
+tondi-scan-h2c = { workspace = true }
+tondi-scan-lib = { workspace = true, features = ["tracing-browser"] }
+
+console_error_panic_hook = { workspace = true }
+futures = { workspace = true }
+gloo = { workspace = true, features = ["futures", "net"] }
+nill = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde-wasm-bindgen = { workspace = true }
+thiserror = { workspace = true }
+wasm-bindgen = { workspace = true }
+wasm-bindgen-futures = { workspace = true }
+wasm-streams = { workspace = true }
+web-sys = { workspace = true, features = ["WebSocket", "MessageEvent", "CloseEvent", "Request", "RequestInit", "RequestMode", "Response"] }
 
 
 [lints]
 workspace = true
-
-
-[dependencies]
-xscan-h2c = { workspace = true, features = ["gzip"] }
-xscan-lib = { workspace = true, features = ["tracing-browser"] }
-
-bytes                    = { workspace = true }
-console_error_panic_hook = { workspace = true, optional = true }
-futures                  = { workspace = true, features = ["alloc"] }
-gloo                     = { workspace = true, features = ["net"] }
-http                     = { workspace = true }
-http-body                = { workspace = true }
-http-body-util           = { workspace = true }
-nill                     = { workspace = true }
-thiserror                = { workspace = true }
-tower                    = { workspace = true }
-wasm-bindgen             = { workspace = true }
-wasm-bindgen-futures     = { workspace = true }
-wasm-streams             = { workspace = true }
-web-sys                  = { workspace = true }
-
-
-[build-dependencies]

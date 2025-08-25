@@ -1,12 +1,12 @@
-use std::ops::Deref;
+use std::sync::Arc;
 
 use axum::extract::{FromRef, State};
-use xscan_db::diesel::{
-    PgConnection,
-    r2d2::{ConnectionManager, Pool, PoolError},
+use tondi_scan_db::diesel::{
+    pg::PgConnection,
+    r2d2::{ConnectionManager, Pool, PooledConnection},
 };
 
-use crate::ctx::Context;
+use crate::error::Result;
 
 pub type PgPool = Pool<ConnectionManager<PgConnection>>;
 

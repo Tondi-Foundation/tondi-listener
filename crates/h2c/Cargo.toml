@@ -1,7 +1,7 @@
 [package]
-name = "xscan-h2c"
+name = "tondi-scan-h2c"
 
-description = "xscan-h2c"
+description = "Tondi Scan HTTP/2 Client"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -12,11 +12,11 @@ crate-type = ["cdylib", "rlib", "staticlib"]
 
 
 [features]
-default    = ["rkyv-codec"]
-gzip       = ["tonic/gzip"]      # TODO: zstd(wasm)
-rkyv-codec = ["dep:rkyv"]
-router     = ["tonic/router"]
-transport  = ["tonic/transport"]
+default = []
+gzip = []
+router = []
+transport = []
+rkyv-codec = []
 
 
 [lints]
@@ -24,14 +24,11 @@ workspace = true
 
 
 [dependencies]
-bytes     = { workspace = true }
-nill      = { workspace = true }
-prost     = { workspace = true, features = ["derive"] }
-rkyv      = { workspace = true, features = ["std", "unaligned"], optional = true }
-thiserror = { workspace = true }
-tonic     = { workspace = true, features = ["codegen"] }
+prost = { workspace = true }
+tonic = { workspace = true, features = ["gzip", "transport"] }
 tonic-web = { workspace = true }
+tonic-prost = { workspace = true }
 
 
 [build-dependencies]
-tonic-prost-build = { workspace = true, features = ["cleanup-markdown"] }
+tonic-prost-build = { workspace = true }

@@ -1,7 +1,7 @@
 [package]
-name = "xscan-db"
+name = "tondi-scan-db"
 
-description = "xscan-db"
+description = "Tondi Scan Database Layer"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -20,9 +20,6 @@ workspace = true
 
 
 [dependencies]
-xscan-lib = { workspace = true }
-
-diesel    = { workspace = true, features = ["postgres", "r2d2"] }
-hex       = { workspace = true, features = ["serde", "std"] }
-serde     = { workspace = true, features = ["derive"] }
+diesel = { workspace = true, features = ["postgres", "r2d2", "chrono", "serde_json"] }
+serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }

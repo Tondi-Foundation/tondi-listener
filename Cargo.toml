@@ -11,12 +11,13 @@ version = "0.1.1"
 
 [workspace.dependencies]
 # Member
-xscan-db  = { path = "crates/db", version = "0.1.1" }
-xscan-h2c = { path = "crates/h2c", version = "0.1.1" }
-xscan-h2s = { path = "crates/h2s", version = "0.1.1" }
-xscan-lib = { path = "crates/lib", version = "0.1.1" }
-xscan-w2c = { path = "crates/w2c", version = "0.1.1" }
-xscan-w3c = { path = "crates/w3c", version = "0.1.1" }
+tondi-scan-db  = { path = "crates/db", version = "0.1.1" }
+tondi-scan-h2c = { path = "crates/h2c", version = "0.1.1" }
+tondi-scan-h2s = { path = "crates/h2s", version = "0.1.1" }
+tondi-scan-h3c = { path = "crates/h3c", version = "0.1.1" }
+tondi-scan-lib = { path = "crates/lib", version = "0.1.1" }
+tondi-scan-w2c = { path = "crates/w2c", version = "0.1.1" }
+tondi-scan-w3c = { path = "crates/w3c", version = "0.1.1" }
 
 # Extern
 axum                       = { default-features = false, version = "0.8" }
@@ -34,6 +35,7 @@ nill                       = { default-features = false, version = "=1.0" }
 prost                      = { default-features = false, version = "0.14" }
 rkyv                       = { default-features = false, version = "0.8" }
 serde                      = { default-features = false, version = "1" }
+serde_json                 = { default-features = false, version = "1" }
 serde-wasm-bindgen         = { default-features = false, version = "0.6" }
 thiserror                  = { default-features = false, version = "2.0" }
 tokio                      = { default-features = false, version = "1" }
@@ -51,12 +53,13 @@ web-sys                    = { default-features = false, version = "0.3" }
 
 # Build
 tonic-prost-build = { version = "0.14", default-features = false }
+tonic-prost = { version = "0.14", default-features = false }
 
 
 [package]
-name = "xscan"
+name = "tondi-scan"
 
-description = "xscan"
+description = "Tondi Scan - High-performance blockchain scanning service"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -67,10 +70,10 @@ default = []
 
 
 [dependencies]
-xscan-h2c = { workspace = true }
-xscan-h2s = { workspace = true }
-xscan-lib = { workspace = true }
-xscan-w2c = { workspace = true }
+tondi-scan-h2c = { workspace = true }
+tondi-scan-h2s = { workspace = true }
+tondi-scan-lib = { workspace = true }
+tondi-scan-w2c = { workspace = true }
 
 
 [workspace.lints.clippy]

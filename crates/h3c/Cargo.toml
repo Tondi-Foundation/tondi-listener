@@ -1,7 +1,7 @@
 [package]
-name = "xscan-h3c"
+name = "tondi-scan-h3c"
 
-description = "xscan-h3c"
+description = "Tondi Scan HTTP/3 Client"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -11,12 +11,12 @@ version     = { workspace = true }
 default = []
 
 
+[dependencies]
+tondi-scan-lib = { workspace = true }
+
+
 [lints]
 workspace = true
-
-
-[dependencies]
-xscan-lib = { workspace = true }
 
 
 [build-dependencies]

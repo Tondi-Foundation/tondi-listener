@@ -1,4 +1,4 @@
-use xscan_h2c::tonic::Status as TonicStatus;
+use tondi_scan_h2c::tonic::Status as TonicStatus;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

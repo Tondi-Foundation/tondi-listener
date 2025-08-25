@@ -4,7 +4,7 @@ pub mod codec;
 pub mod protowire {
     macro_rules! include_proto {
         ($package:tt) => {
-            include!(concat!(env!("PROTO_GEN_DIR"), concat!("/", $package, ".rs")));
+            include!(concat!("../../../target/proto/", $package, ".rs"));
         };
     }
 

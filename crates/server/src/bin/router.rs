@@ -1,24 +1,27 @@
-use std::net::SocketAddr;
-
+use axum::Router;
 use nill::{Nil, nil};
 use tokio::net::TcpListener;
-use xscan_lib::log::{info, init_tracing_subscriber_log};
-use xscan_server::{
-    ctx::{Context, config::Config},
+use tondi_scan_lib::log::{info, init_tracing_subscriber_log};
+use tondi_scan_server::{
+    ctx::Context,
     error::Result,
-    routes::router,
+    middleware,
+    routes::{chain, transaction, websocket},
 };
 
 #[tokio::main]
 async fn main() -> Result<Nil> {
     init_tracing_subscriber_log();
 
-    let config = Config::default();
+    let config = Context::default().config;
     let socket: SocketAddr = config.host_url.parse()?;
     info!("Server running: http://{socket}");
 
     let ctx = Context::new(config)?;
-    let router = router(ctx).await?;
+    let router = Router::new()
+        .merge(chain::router(ctx).await?)
+        .merge(transaction::router(ctx).await?)
+        .merge(websocket::router(ctx).await?);
 
     let listen = TcpListener::bind(socket).await?;
     axum::serve(listen, router).await?;

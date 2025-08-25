@@ -1,8 +1,8 @@
 use nill::{Nil, nil};
 use wasm_bindgen_futures::spawn_local;
-use xscan_h2c::protowire::Ping;
-use xscan_lib::log::{info, init_tracing_browser_subscriber_log};
-use xscan_w2c::{error::Result, route::pingpong::pingpong};
+use tondi_scan_h2c::protowire::Ping;
+use tondi_scan_lib::log::{info, init_tracing_browser_subscriber_log};
+use tondi_scan_w2c::{error::Result, route::pingpong::pingpong};
 
 // #[tokio::main(flavor = "current_thread")] async
 fn main() -> Result<Nil> {

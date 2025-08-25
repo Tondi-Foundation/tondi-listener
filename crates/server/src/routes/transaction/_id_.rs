@@ -1,14 +1,16 @@
 use axum::extract::Path;
-use xscan_db::{
-    diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper},
-    models::transaction::Tx,
-    schema::{
-        table::TTx,
-        tyext::hash::{FromHex, Hash256},
-    },
+use tondi_scan_db::{
+    diesel::{prelude::*, r2d2::ConnectionManager, PgConnection},
+    models::transaction::Transaction,
+    schema::table::TTransaction,
 };
+use nill::{Nil, nil};
 
-use crate::{ctx::pg_database::PgDb, shared::data::Data};
+use crate::{
+    ctx::Context,
+    error::Result,
+    shared::data::Inner as DataInner,
+};
 
 pub async fn get(Path(id): Path<String>, db: PgDb<'_>) -> Data<Tx> {
     let mut conn = db.get()?;

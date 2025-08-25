@@ -1,10 +1,15 @@
-use xscan_db::{
-    diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper},
+use tondi_scan_db::{
+    diesel::{prelude::*, r2d2::ConnectionManager, PgConnection},
     models::chain::Header,
-    schema::table::{THeader, THeader::daa_score},
+    schema::table::THeader,
 };
+use nill::{Nil, nil};
 
-use crate::{ctx::pg_database::PgDb, shared::data::Data};
+use crate::{
+    ctx::Context,
+    error::Result,
+    shared::data::Inner as DataInner,
+};
 
 pub async fn get(db: PgDb<'_>) -> Data<Header> {
     let mut conn = db.get()?;

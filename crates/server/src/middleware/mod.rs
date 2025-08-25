@@ -2,6 +2,7 @@ pub mod cors;
 pub mod error;
 pub mod limit;
 pub mod trace;
+pub mod security;
 
 use std::{convert::Infallible, time::Duration};
 
@@ -9,8 +10,18 @@ use axum::{
     error_handling::HandleErrorLayer, extract::Request, response::IntoResponse, routing::Route,
 };
 use tower::{Layer, Service, ServiceBuilder};
+use tower_http::{
+    compression::CompressionLayer,
+    limit::RequestBodyLimitLayer,
+    timeout::TimeoutLayer,
+    trace::TraceLayer,
+};
 
-use crate::middleware::{cors::cors, error::handler as ErrorHandler, limit::timeout, trace::trace};
+use crate::{
+    ctx::config::{Config, SecurityConfig},
+    error::Error,
+    middleware::{cors::cors, error::handler as ErrorHandler, limit::timeout, trace::trace, security::rate_limit},
+};
 
 // Restrictive Service Constraints
 pub trait ServiceExt: Clone + Send + Sync
@@ -52,12 +63,57 @@ where
     type ServiceExt = T::Service;
 }
 
-pub fn middleware() -> impl Middleware {
-    // TODO: timeout, retry, rate_limit, Compress, HandlerError
+pub fn middleware(config: &Config) -> impl Middleware {
+    let security = &config.security;
+    
     ServiceBuilder::new()
+        // Basic middleware
+        .layer(TraceLayer::new_for_http())
         .layer(trace())
-        .layer(cors())
+        
+        // Security middleware
+        .layer(cors(&config.cors))
+        .layer(rate_limit(security.rate_limit))
+        .layer(RequestBodyLimitLayer::new(security.max_body_size))
+        
+        // Performance middleware
+        .layer(CompressionLayer::new())
+        .layer(TimeoutLayer::new(Duration::from_secs(security.timeout)))
+        
+        // Error handling
+        .layer(HandleErrorLayer::new(ErrorHandler))
+        
+        // Load balancing
+        .load_shed()
+        
+        // Timeout handling
+        .layer(timeout(Duration::from_secs(security.timeout)))
+}
+
+/// Development environment middleware configuration
+pub fn development_middleware() -> impl Middleware {
+    ServiceBuilder::new()
+        .layer(TraceLayer::new_for_http())
+        .layer(trace())
+        .layer(cors(&crate::ctx::config::CorsConfig::default()))
         .layer(HandleErrorLayer::new(ErrorHandler))
         .load_shed()
-        .layer(timeout(Duration::from_secs(15)))
+        .layer(timeout(Duration::from_secs(30)))
+}
+
+/// Production environment middleware configuration
+pub fn production_middleware(config: &Config) -> impl Middleware {
+    let security = &config.security;
+    
+    ServiceBuilder::new()
+        .layer(TraceLayer::new_for_http())
+        .layer(trace())
+        .layer(crate::middleware::cors::strict_cors())
+        .layer(rate_limit(security.rate_limit))
+        .layer(RequestBodyLimitLayer::new(security.max_body_size))
+        .layer(CompressionLayer::new())
+        .layer(TimeoutLayer::new(Duration::from_secs(security.timeout)))
+        .layer(HandleErrorLayer::new(ErrorHandler))
+        .load_shed()
+        .layer(timeout(Duration::from_secs(security.timeout)))
 }

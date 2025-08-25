@@ -1,7 +1,7 @@
 [package]
-name = "xscan-w3c"
+name = "tondi-scan-w3c"
 
-description = "xscan-w3c"
+description = "Tondi Scan WebAssembly Components"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -11,12 +11,12 @@ version     = { workspace = true }
 default = []
 
 
+[dependencies]
+wasm-bindgen = { workspace = true }
+
+
 [lints]
 workspace = true
-
-
-[dependencies]
-xscan-lib = { workspace = true }
 
 
 [build-dependencies]

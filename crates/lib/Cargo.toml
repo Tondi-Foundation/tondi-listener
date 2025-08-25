@@ -1,7 +1,7 @@
 [package]
-name = "xscan-lib"
+name = "tondi-scan-lib"
 
-description = "xscan-lib"
+description = "Tondi Scan Shared Library"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -14,7 +14,7 @@ crate-type = ["cdylib", "rlib", "staticlib"]
 [features]
 default         = []
 mimalloc        = ["dep:mimalloc"]
-tracing-browser = ["dep:tracing-browser-subscriber"]
+tracing-browser = ["tracing-browser-subscriber"]
 
 
 [lints]

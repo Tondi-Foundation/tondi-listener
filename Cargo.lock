@@ -40,6 +40,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "alloc-no-stdlib"
+version = "2.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc7bb162ec39d46ab1ca8c77bf72e890535becd1751bb45f64c597edb4c8c6b3"
+
+[[package]]
+name = "alloc-stdlib"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94fb8275041c72129eb51b7d0322c29b8387a0386127718b096429201a5d6ece"
+dependencies = [
+ "alloc-no-stdlib",
+]
+
+[[package]]
 name = "android-tzdata"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -109,6 +124,24 @@ dependencies = [
  "event-listener-strategy",
  "futures-core",
  "pin-project-lite",
+]
+
+[[package]]
+name = "async-compression"
+version = "0.4.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6448dfb3960f0b038e88c781ead1e7eb7929dfc3a71a1336ec9086c00f6d1e75"
+dependencies = [
+ "brotli",
+ "compression-codecs",
+ "compression-core",
+ "flate2",
+ "futures-core",
+ "memchr",
+ "pin-project-lite",
+ "tokio",
+ "zstd",
+ "zstd-safe",
 ]
 
 [[package]]
@@ -400,6 +433,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d965446196e3b7decd44aa7ee49e31d630118f90ef12f97900f262eb915c951d"
 
 [[package]]
+name = "bincode"
+version = "1.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "bitcoin"
 version = "0.32.6"
 source = "git+https://github.com/neomaxwell/rust-bitcoin.git?branch=bitcoin-0.32.6#a4b9bae8500407fb0921b5e0a2c82567ee27a8a6"
@@ -515,10 +557,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fdd1d3c0c2f5833f22386f252fe8ed005c7f59fdcddeef025c01b4c3b9fd9ac3"
 dependencies = [
  "once_cell",
- "proc-macro-crate",
+ "proc-macro-crate 3.3.0",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
+]
+
+[[package]]
+name = "brotli"
+version = "8.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4bd8b9603c7aa97359dbd97ecf258968c95f3adddd6db2f7e7a5bef101c84560"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
+ "brotli-decompressor",
+]
+
+[[package]]
+name = "brotli-decompressor"
+version = "5.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "874bb8112abecc98cbd6d81ea4fa7e94fb9449648c93cc89aa40c81c24d7de03"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
 ]
 
 [[package]]
@@ -586,6 +649,8 @@ version = "1.2.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42bc4aea80032b7bf409b0bc7ccad88853858911b7713a8062fdc0623867bedc"
 dependencies = [
+ "jobserver",
+ "libc",
  "shlex",
 ]
 
@@ -614,6 +679,28 @@ dependencies = [
  "wasm-bindgen",
  "windows-link",
 ]
+
+[[package]]
+name = "compression-codecs"
+version = "0.4.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46cc6539bf1c592cff488b9f253b30bc0ec50d15407c2cf45e27bd8f308d5905"
+dependencies = [
+ "brotli",
+ "compression-core",
+ "flate2",
+ "futures-core",
+ "memchr",
+ "pin-project-lite",
+ "zstd",
+ "zstd-safe",
+]
+
+[[package]]
+name = "compression-core"
+version = "0.4.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2957e823c15bde7ecf1e8b64e537aa03a6be5fda0e2334e99887669e75b12e01"
 
 [[package]]
 name = "concurrent-queue"
@@ -825,10 +912,12 @@ checksum = "229850a212cd9b84d4f0290ad9d294afc0ae70fccaa8949dbe8b43ffafa1e20c"
 dependencies = [
  "bitflags",
  "byteorder",
+ "chrono",
  "diesel_derives",
  "itoa",
  "pq-sys",
  "r2d2",
+ "serde_json",
 ]
 
 [[package]]
@@ -977,16 +1066,6 @@ version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2a2b11eda1d40935b26cf18f6833c526845ae8c41e58d09af6adeb6f0269183"
 dependencies = [
- "serde",
-]
-
-[[package]]
-name = "faster-hex"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7223ae2d2f179b803433d9c830478527e92b8117eab39460edae7f1614d9fb73"
-dependencies = [
- "heapless",
  "serde",
 ]
 
@@ -1176,7 +1255,33 @@ version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d15282ece24eaf4bd338d73ef580c6714c8615155c4190c781290ee3fa0fd372"
 dependencies = [
+ "gloo-file",
  "gloo-net",
+ "gloo-timers",
+ "gloo-worker",
+]
+
+[[package]]
+name = "gloo-events"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "27c26fb45f7c385ba980f5fa87ac677e363949e065a083722697ef1b2cc91e41"
+dependencies = [
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
+name = "gloo-file"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97563d71863fb2824b2e974e754a81d19c4a7ec47b09ced8a0e6656b6d54bd1f"
+dependencies = [
+ "futures-channel",
+ "gloo-events",
+ "js-sys",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
@@ -1226,6 +1331,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "gloo-worker"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "085f262d7604911c8150162529cefab3782e91adb20202e8658f7275d2aefe5d"
+dependencies = [
+ "bincode",
+ "futures",
+ "gloo-utils",
+ "gloo-worker-macros",
+ "js-sys",
+ "pinned",
+ "serde",
+ "thiserror 1.0.69",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
+name = "gloo-worker-macros"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "956caa58d4857bc9941749d55e4bd3000032d8212762586fa5705632967140e7"
+dependencies = [
+ "proc-macro-crate 1.3.1",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+]
+
+[[package]]
 name = "h2"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1242,15 +1378,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
-]
-
-[[package]]
-name = "hash32"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47d60b12902ba28e2730cd37e95b8c9223af2808df9e902d4df49588d1470606"
-dependencies = [
- "byteorder",
 ]
 
 [[package]]
@@ -1273,16 +1400,6 @@ name = "hashbrown"
 version = "0.15.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
-
-[[package]]
-name = "heapless"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bfb9eb618601c89945a70e254898da93b13be0388091d42117462b265bb3fad"
-dependencies = [
- "hash32",
- "stable_deref_trait",
-]
 
 [[package]]
 name = "heck"
@@ -1595,6 +1712,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 
 [[package]]
+name = "jobserver"
+version = "0.1.34"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9afb3de4395d6b3e67a780b6de64b51c978ecf11cb9a462c66be7d4ca9039d33"
+dependencies = [
+ "getrandom 0.3.3",
+ "libc",
+]
+
+[[package]]
 name = "js-sys"
 version = "0.3.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1862,26 +1989,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d87ecb2933e8aeadb3e3a02b828fed80a7528047e68b4f424523a0981a3a084"
 
 [[package]]
-name = "munge"
-version = "0.4.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7feb0b48aa0a25f9fe0899482c6e1379ee7a11b24a53073eacdecb9adb6dc60"
-dependencies = [
- "munge_macro",
-]
-
-[[package]]
-name = "munge_macro"
-version = "0.4.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2e3795a5d2da581a8b252fec6022eee01aea10161a4d1bf237d4cbe47f7e988"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.106",
-]
-
-[[package]]
 name = "nill"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2115,6 +2222,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
+name = "pinned"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a829027bd95e54cfe13e3e258a1ae7b645960553fb82b75ff852c29688ee595b"
+dependencies = [
+ "futures",
+ "rustversion",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "piper"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2124,6 +2242,12 @@ dependencies = [
  "fastrand",
  "futures-io",
 ]
+
+[[package]]
+name = "pkg-config"
+version = "0.3.32"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 
 [[package]]
 name = "polling"
@@ -2176,11 +2300,21 @@ dependencies = [
 
 [[package]]
 name = "proc-macro-crate"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f4c021e1093a56626774e81216a4ce732a735e5bad4868a03f3ed65ca0c3919"
+dependencies = [
+ "once_cell",
+ "toml_edit 0.19.15",
+]
+
+[[package]]
+name = "proc-macro-crate"
 version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "edce586971a4dfaa28950c6f18ed55e0406c1ab88bbce2c6f6293a7aaba73d35"
 dependencies = [
- "toml_edit",
+ "toml_edit 0.22.27",
 ]
 
 [[package]]
@@ -2270,8 +2404,6 @@ dependencies = [
  "prettyplease",
  "prost 0.14.1",
  "prost-types 0.14.1",
- "pulldown-cmark",
- "pulldown-cmark-to-cmark",
  "regex",
  "syn 2.0.106",
  "tempfile",
@@ -2322,46 +2454,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ptr_meta"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe9e76f66d3f9606f44e45598d155cb13ecf09f4a28199e48daf8c8fc937ea90"
-dependencies = [
- "ptr_meta_derive",
-]
-
-[[package]]
-name = "ptr_meta_derive"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca414edb151b4c8d125c12566ab0d74dc9cdba36fb80eb7b848c15f495fd32d1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.106",
-]
-
-[[package]]
-name = "pulldown-cmark"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e8bbe1a966bd2f362681a44f6edce3c2310ac21e4d5067a6e7ec396297a6ea0"
-dependencies = [
- "bitflags",
- "memchr",
- "unicase",
-]
-
-[[package]]
-name = "pulldown-cmark-to-cmark"
-version = "21.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5b6a0769a491a08b31ea5c62494a8f144ee0987d86d670a8af4df1e1b7cde75"
-dependencies = [
- "pulldown-cmark",
-]
-
-[[package]]
 name = "quote"
 version = "1.0.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2385,15 +2477,6 @@ dependencies = [
  "log",
  "parking_lot",
  "scheduled-thread-pool",
-]
-
-[[package]]
-name = "rancor"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "caf5f7161924b9d1cea0e4cabc97c372cea92b5f927fc13c6bca67157a0ad947"
-dependencies = [
- "ptr_meta",
 ]
 
 [[package]]
@@ -2540,12 +2623,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
-name = "rend"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a35e8a6bf28cd121053a66aa2e6a2e3eaffad4a60012179f0e864aa5ffeff215"
-
-[[package]]
 name = "ring"
 version = "0.17.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2557,35 +2634,6 @@ dependencies = [
  "libc",
  "untrusted",
  "windows-sys 0.52.0",
-]
-
-[[package]]
-name = "rkyv"
-version = "0.8.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19f5c3e5da784cd8c69d32cdc84673f3204536ca56e1fa01be31a74b92c932ac"
-dependencies = [
- "bytes",
- "hashbrown 0.15.5",
- "indexmap 2.11.0",
- "munge",
- "ptr_meta",
- "rancor",
- "rend",
- "rkyv_derive",
- "tinyvec",
- "uuid 1.18.0",
-]
-
-[[package]]
-name = "rkyv_derive"
-version = "0.8.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4270433626cffc9c4c1d3707dd681f2a2718d3d7b09ad754bec137acecda8d22"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.106",
 ]
 
 [[package]]
@@ -2946,12 +2994,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "stable_deref_trait"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
-
-[[package]]
 name = "strsim"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3217,13 +3259,24 @@ checksum = "22cddaf88f4fbc13c51aebbf5f8eceb5c7c5a9da2ac40a13519eb5b0a0e8f11c"
 
 [[package]]
 name = "toml_edit"
+version = "0.19.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b5bb770da30e5cbfde35a2d7b9b8a2c4b8ef89548a7a6aeab5c9a576e3e7421"
+dependencies = [
+ "indexmap 2.11.0",
+ "toml_datetime",
+ "winnow 0.5.40",
+]
+
+[[package]]
+name = "toml_edit"
 version = "0.22.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "41fe8c660ae4257887cf66394862d21dbca4a6ddd26f04a3560410406a2f819a"
 dependencies = [
  "indexmap 2.11.0",
  "toml_datetime",
- "winnow",
+ "winnow 0.7.13",
 ]
 
 [[package]]
@@ -3243,13 +3296,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "tondi-addresses"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "bech32",
+ "borsh",
+ "js-sys",
+ "serde",
+ "smallvec",
+ "thiserror 1.0.69",
+ "wasm-bindgen",
+ "workflow-log",
+ "workflow-wasm",
+]
+
+[[package]]
 name = "tondi-consensus-client"
 version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
 dependencies = [
  "ahash",
  "cfg-if",
- "faster-hex 0.9.0",
+ "faster-hex",
  "hex",
  "itertools 0.13.0",
  "js-sys",
@@ -3259,13 +3328,42 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "thiserror 1.0.69",
- "tondi-addresses",
- "tondi-consensus-core",
- "tondi-hashes",
- "tondi-math",
- "tondi-txscript",
- "tondi-utils",
- "tondi-wasm-core",
+ "tondi-addresses 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-wasm-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "wasm-bindgen",
+ "workflow-log",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-consensus-client"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "ahash",
+ "cfg-if",
+ "faster-hex",
+ "hex",
+ "itertools 0.13.0",
+ "js-sys",
+ "rand 0.8.5",
+ "secp256k1",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tondi-addresses 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-wasm-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "wasm-bindgen",
  "workflow-log",
  "workflow-wasm",
@@ -3281,7 +3379,7 @@ dependencies = [
  "bitcoin",
  "borsh",
  "cfg-if",
- "faster-hex 0.9.0",
+ "faster-hex",
  "futures-util",
  "getrandom 0.2.16",
  "hex",
@@ -3296,14 +3394,54 @@ dependencies = [
  "serde_json",
  "smallvec",
  "thiserror 1.0.69",
- "tondi-addresses",
- "tondi-core",
- "tondi-hashes",
- "tondi-math",
- "tondi-merkle",
- "tondi-muhash",
- "tondi-txscript-errors",
- "tondi-utils",
+ "tondi-addresses 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-merkle 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-muhash 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript-errors 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "wasm-bindgen",
+ "workflow-core",
+ "workflow-log",
+ "workflow-serializer",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-consensus-core"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "bitcoin",
+ "borsh",
+ "cfg-if",
+ "faster-hex",
+ "futures-util",
+ "getrandom 0.2.16",
+ "hex",
+ "itertools 0.13.0",
+ "js-sys",
+ "log",
+ "rand 0.8.5",
+ "secp256k1",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_bytes",
+ "serde_json",
+ "smallvec",
+ "thiserror 1.0.69",
+ "tondi-addresses 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-merkle 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-muhash 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript-errors 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "wasm-bindgen",
  "workflow-core",
  "workflow-log",
@@ -3323,11 +3461,31 @@ dependencies = [
  "log",
  "paste",
  "thiserror 1.0.69",
- "tondi-consensus-core",
- "tondi-core",
- "tondi-hashes",
- "tondi-notify",
- "tondi-utils",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "triggered",
+]
+
+[[package]]
+name = "tondi-consensus-notify"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "async-channel 2.5.0",
+ "cfg-if",
+ "derive_more",
+ "futures",
+ "log",
+ "paste",
+ "thiserror 1.0.69",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "triggered",
 ]
 
@@ -3337,7 +3495,7 @@ version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
 dependencies = [
  "cfg-if",
- "faster-hex 0.9.0",
+ "faster-hex",
  "js-sys",
  "rand 0.8.5",
  "secp256k1",
@@ -3345,12 +3503,37 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "thiserror 1.0.69",
- "tondi-addresses",
- "tondi-consensus-client",
- "tondi-consensus-core",
- "tondi-hashes",
- "tondi-txscript",
- "tondi-utils",
+ "tondi-addresses 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-client 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "wasm-bindgen",
+ "workflow-log",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-consensus-wasm"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "cfg-if",
+ "faster-hex",
+ "js-sys",
+ "rand 0.8.5",
+ "secp256k1",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tondi-addresses 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-client 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "wasm-bindgen",
  "workflow-log",
  "workflow-wasm",
@@ -3377,6 +3560,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "tondi-core"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "anyhow",
+ "cfg-if",
+ "ctrlc",
+ "futures-util",
+ "intertrait",
+ "log",
+ "log4rs",
+ "num_cpus",
+ "thiserror 1.0.69",
+ "tokio",
+ "triggered",
+ "wasm-bindgen",
+ "workflow-log",
+]
+
+[[package]]
 name = "tondi-grpc-client"
 version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
@@ -3384,7 +3587,7 @@ dependencies = [
  "async-channel 2.5.0",
  "async-stream",
  "async-trait",
- "faster-hex 0.9.0",
+ "faster-hex",
  "futures",
  "futures-util",
  "h2",
@@ -3399,11 +3602,11 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tokio-stream",
- "tondi-core",
- "tondi-grpc-core",
- "tondi-notify",
- "tondi-rpc-core",
- "tondi-utils",
+ "tondi-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-grpc-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-rpc-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
  "tondi-utils-tower",
  "tonic 0.12.3",
  "triggered",
@@ -3417,7 +3620,7 @@ dependencies = [
  "async-channel 2.5.0",
  "async-stream",
  "async-trait",
- "faster-hex 0.9.0",
+ "faster-hex",
  "futures",
  "h2",
  "log",
@@ -3428,12 +3631,43 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tokio-stream",
- "tondi-addresses",
- "tondi-consensus-core",
- "tondi-core",
- "tondi-notify",
- "tondi-rpc-core",
- "tondi-utils",
+ "tondi-addresses 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-rpc-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tonic 0.12.3",
+ "tonic-build 0.12.3",
+ "triggered",
+ "workflow-core",
+]
+
+[[package]]
+name = "tondi-grpc-core"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "async-channel 2.5.0",
+ "async-stream",
+ "async-trait",
+ "faster-hex",
+ "futures",
+ "h2",
+ "log",
+ "paste",
+ "prost 0.13.5",
+ "rand 0.8.5",
+ "regex",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-stream",
+ "tondi-addresses 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-rpc-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "tonic 0.12.3",
  "tonic-build 0.12.3",
  "triggered",
@@ -3448,11 +3682,28 @@ dependencies = [
  "blake3",
  "borsh",
  "cc",
- "faster-hex 0.9.0",
+ "faster-hex",
  "keccak",
  "serde",
  "sha2",
- "tondi-utils",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "wasm-bindgen",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-hashes"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "blake3",
+ "borsh",
+ "cc",
+ "faster-hex",
+ "keccak",
+ "serde",
+ "sha2",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "wasm-bindgen",
  "workflow-wasm",
 ]
@@ -3470,10 +3721,30 @@ dependencies = [
  "paste",
  "serde",
  "thiserror 1.0.69",
- "tondi-consensus-core",
- "tondi-hashes",
- "tondi-notify",
- "tondi-utils",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "triggered",
+]
+
+[[package]]
+name = "tondi-index-core"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "async-channel 2.5.0",
+ "async-trait",
+ "derive_more",
+ "futures",
+ "log",
+ "paste",
+ "serde",
+ "thiserror 1.0.69",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "triggered",
 ]
 
@@ -3483,14 +3754,34 @@ version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
 dependencies = [
  "borsh",
- "faster-hex 0.9.0",
+ "faster-hex",
  "js-sys",
  "malachite-base",
  "malachite-nz",
  "serde",
  "serde-wasm-bindgen",
  "thiserror 1.0.69",
- "tondi-utils",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "wasm-bindgen",
+ "workflow-core",
+ "workflow-log",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-math"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "borsh",
+ "faster-hex",
+ "js-sys",
+ "malachite-base",
+ "malachite-nz",
+ "serde",
+ "serde-wasm-bindgen",
+ "thiserror 1.0.69",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "wasm-bindgen",
  "workflow-core",
  "workflow-log",
@@ -3502,7 +3793,15 @@ name = "tondi-merkle"
 version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
 dependencies = [
- "tondi-hashes",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+]
+
+[[package]]
+name = "tondi-merkle"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
 ]
 
 [[package]]
@@ -3511,7 +3810,16 @@ version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
 dependencies = [
  "thiserror 1.0.69",
- "tondi-consensus-core",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+]
+
+[[package]]
+name = "tondi-mining-errors"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "thiserror 1.0.69",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
 ]
 
 [[package]]
@@ -3521,8 +3829,19 @@ source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4
 dependencies = [
  "rand_chacha 0.3.1",
  "serde",
- "tondi-hashes",
- "tondi-math",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+]
+
+[[package]]
+name = "tondi-muhash"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "rand_chacha 0.3.1",
+ "serde",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
 ]
 
 [[package]]
@@ -3544,13 +3863,45 @@ dependencies = [
  "rand 0.8.5",
  "serde",
  "thiserror 1.0.69",
- "tondi-addresses",
- "tondi-consensus-core",
- "tondi-core",
- "tondi-hashes",
- "tondi-txscript",
- "tondi-txscript-errors",
- "tondi-utils",
+ "tondi-addresses 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript-errors 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "triggered",
+ "workflow-core",
+ "workflow-log",
+ "workflow-serializer",
+]
+
+[[package]]
+name = "tondi-notify"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "async-channel 2.5.0",
+ "async-trait",
+ "borsh",
+ "derive_more",
+ "futures",
+ "futures-util",
+ "indexmap 2.11.0",
+ "itertools 0.13.0",
+ "log",
+ "parking_lot",
+ "paste",
+ "rand 0.8.5",
+ "serde",
+ "thiserror 1.0.69",
+ "tondi-addresses 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript-errors 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "triggered",
  "workflow-core",
  "workflow-log",
@@ -3568,7 +3919,7 @@ dependencies = [
  "cfg-if",
  "derive_more",
  "downcast",
- "faster-hex 0.9.0",
+ "faster-hex",
  "hex",
  "js-sys",
  "log",
@@ -3578,20 +3929,62 @@ dependencies = [
  "serde-wasm-bindgen",
  "smallvec",
  "thiserror 1.0.69",
- "tondi-addresses",
- "tondi-consensus-client",
- "tondi-consensus-core",
- "tondi-consensus-notify",
- "tondi-consensus-wasm",
- "tondi-core",
- "tondi-hashes",
- "tondi-index-core",
- "tondi-math",
- "tondi-mining-errors",
- "tondi-notify",
- "tondi-rpc-macros",
- "tondi-txscript",
- "tondi-utils",
+ "tondi-addresses 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-client 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-wasm 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-index-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-mining-errors 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-rpc-macros 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "uuid 1.18.0",
+ "wasm-bindgen",
+ "workflow-core",
+ "workflow-serializer",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-rpc-core"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "async-channel 2.5.0",
+ "async-trait",
+ "borsh",
+ "cfg-if",
+ "derive_more",
+ "downcast",
+ "faster-hex",
+ "hex",
+ "js-sys",
+ "log",
+ "paste",
+ "rand 0.8.5",
+ "serde",
+ "serde-wasm-bindgen",
+ "smallvec",
+ "thiserror 1.0.69",
+ "tondi-addresses 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-client 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-notify 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-wasm 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-index-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-math 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-mining-errors 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-rpc-macros 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "uuid 1.18.0",
  "wasm-bindgen",
  "workflow-core",
@@ -3610,6 +4003,129 @@ dependencies = [
  "quote",
  "regex",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "tondi-rpc-macros"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "convert_case 0.6.0",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "tondi-scan"
+version = "0.1.1"
+dependencies = [
+ "tondi-scan-h2c",
+ "tondi-scan-h2s",
+ "tondi-scan-lib",
+ "tondi-scan-w2c",
+]
+
+[[package]]
+name = "tondi-scan-db"
+version = "0.1.1"
+dependencies = [
+ "diesel",
+ "serde",
+ "thiserror 2.0.16",
+]
+
+[[package]]
+name = "tondi-scan-h2c"
+version = "0.1.1"
+dependencies = [
+ "prost 0.14.1",
+ "tonic 0.14.1",
+ "tonic-prost",
+ "tonic-prost-build",
+ "tonic-web",
+]
+
+[[package]]
+name = "tondi-scan-h2s"
+version = "0.1.1"
+dependencies = [
+ "nill",
+ "prost 0.14.1",
+ "thiserror 2.0.16",
+ "tondi-scan-h2c",
+ "tonic 0.14.1",
+]
+
+[[package]]
+name = "tondi-scan-h3c"
+version = "0.1.1"
+dependencies = [
+ "tondi-scan-lib",
+]
+
+[[package]]
+name = "tondi-scan-lib"
+version = "0.1.1"
+dependencies = [
+ "mimalloc",
+ "thiserror 2.0.16",
+ "tracing",
+ "tracing-browser-subscriber",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "tondi-scan-server"
+version = "0.1.1"
+dependencies = [
+ "axum 0.8.4",
+ "futures",
+ "http 1.3.1",
+ "nill",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.16",
+ "tokio",
+ "tondi-grpc-client",
+ "tondi-grpc-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-rpc-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-scan-db",
+ "tondi-scan-h2c",
+ "tondi-scan-h2s",
+ "tondi-scan-lib",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tower 0.5.2",
+ "tower-http 0.6.6",
+]
+
+[[package]]
+name = "tondi-scan-w2c"
+version = "0.1.1"
+dependencies = [
+ "console_error_panic_hook",
+ "futures",
+ "gloo",
+ "nill",
+ "serde",
+ "serde-wasm-bindgen",
+ "thiserror 2.0.16",
+ "tondi-scan-h2c",
+ "tondi-scan-lib",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-streams",
+ "web-sys",
+]
+
+[[package]]
+name = "tondi-scan-w3c"
+version = "0.1.1"
+dependencies = [
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -3635,12 +4151,45 @@ dependencies = [
  "sha2",
  "smallvec",
  "thiserror 1.0.69",
- "tondi-addresses",
- "tondi-consensus-core",
- "tondi-hashes",
- "tondi-txscript-errors",
- "tondi-utils",
- "tondi-wasm-core",
+ "tondi-addresses 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript-errors 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-wasm-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
+ "wasm-bindgen",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-txscript"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "bitcoin",
+ "blake2b_simd",
+ "blake3",
+ "borsh",
+ "cfg-if",
+ "hexplay",
+ "indexmap 2.11.0",
+ "itertools 0.13.0",
+ "log",
+ "parking_lot",
+ "rand 0.8.5",
+ "secp256k1",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "sha2",
+ "smallvec",
+ "thiserror 1.0.69",
+ "tondi-addresses 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-consensus-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-hashes 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-txscript-errors 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-utils 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
+ "tondi-wasm-core 0.17.0 (git+ssh://github.com/AvatoLabs/Tondi.git?branch=main)",
  "wasm-bindgen",
  "workflow-wasm",
 ]
@@ -3649,6 +4198,15 @@ dependencies = [
 name = "tondi-txscript-errors"
 version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "secp256k1",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "tondi-txscript-errors"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
 dependencies = [
  "secp256k1",
  "thiserror 1.0.69",
@@ -3666,7 +4224,39 @@ dependencies = [
  "cfg-if",
  "duct",
  "event-listener 2.5.3",
- "faster-hex 0.9.0",
+ "faster-hex",
+ "hex",
+ "ipnet",
+ "itertools 0.13.0",
+ "log",
+ "mac_address",
+ "num_cpus",
+ "once_cell",
+ "parking_lot",
+ "rlimit",
+ "serde",
+ "sha2",
+ "smallvec",
+ "sysinfo",
+ "thiserror 1.0.69",
+ "triggered",
+ "uuid 1.18.0",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "tondi-utils"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "arc-swap",
+ "async-channel 2.5.0",
+ "blake3",
+ "borsh",
+ "cfg-if",
+ "duct",
+ "event-listener 2.5.3",
+ "faster-hex",
  "hex",
  "ipnet",
  "itertools 0.13.0",
@@ -3708,7 +4298,19 @@ name = "tondi-wasm-core"
 version = "0.17.0"
 source = "git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
 dependencies = [
- "faster-hex 0.9.0",
+ "faster-hex",
+ "hexplay",
+ "js-sys",
+ "wasm-bindgen",
+ "workflow-wasm",
+]
+
+[[package]]
+name = "tondi-wasm-core"
+version = "0.17.0"
+source = "git+ssh://github.com/AvatoLabs/Tondi.git?branch=main#a0ef696c764b4cc7481d59ebfc01d71c19a42c86"
+dependencies = [
+ "faster-hex",
  "hexplay",
  "js-sys",
  "wasm-bindgen",
@@ -3756,7 +4358,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67ac5a8627ada0968acec063a4746bf79588aa03ccb66db2f75d7dce26722a40"
 dependencies = [
  "async-trait",
- "axum 0.8.4",
  "base64",
  "bytes",
  "flate2",
@@ -3803,6 +4404,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.106",
+]
+
+[[package]]
+name = "tonic-prost"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b9c511b9a96d40cb12b7d5d00464446acf3b9105fd3ce25437cfe41c92b1c87d"
+dependencies = [
+ "bytes",
+ "prost 0.14.1",
+ "tonic 0.14.1",
 ]
 
 [[package]]
@@ -3900,12 +4512,16 @@ version = "0.6.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "adc82fd73de2a9722ac5da747f12383d2bfdb93591ee6c58486e0097890f05f2"
 dependencies = [
+ "async-compression",
  "bitflags",
  "bytes",
+ "futures-core",
  "http 1.3.1",
  "http-body",
+ "http-body-util",
  "pin-project-lite",
  "tokio",
+ "tokio-util",
  "tower-layer",
  "tower-service",
  "tracing",
@@ -4039,12 +4655,6 @@ name = "typenum"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
-
-[[package]]
-name = "unicase"
-version = "2.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75b844d17643ee918803943289730bec8aac480150456169e647ed0b576ba539"
 
 [[package]]
 name = "unicode-ident"
@@ -4691,6 +5301,15 @@ checksum = "271414315aff87387382ec3d271b52d7ae78726f5d44ac98b4f4030c91880486"
 
 [[package]]
 name = "winnow"
+version = "0.5.40"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f593a95398737aeed53e489c785df13f3618e41dbcd6718c6addbf1395aa6876"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
+name = "winnow"
 version = "0.7.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "21a0236b59786fed61e2a80582dd500fe61f18b5dca67a4a067d0bc9039339cf"
@@ -4720,7 +5339,7 @@ dependencies = [
  "cfg-if",
  "chrono",
  "dirs",
- "faster-hex 0.9.0",
+ "faster-hex",
  "futures",
  "getrandom 0.2.16",
  "instant",
@@ -4815,7 +5434,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "799e5fbf266e0fffb5c24d6103735eb2b94bb31f93b664b91eaaf63b4f959804"
 dependencies = [
  "cfg-if",
- "faster-hex 0.9.0",
+ "faster-hex",
  "futures",
  "js-sys",
  "serde",
@@ -4844,121 +5463,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "xscan"
-version = "0.1.1"
-dependencies = [
- "xscan-h2c",
- "xscan-h2s",
- "xscan-lib",
- "xscan-w2c",
-]
-
-[[package]]
-name = "xscan-db"
-version = "0.1.1"
-dependencies = [
- "diesel",
- "faster-hex 0.10.0",
- "serde",
- "thiserror 2.0.16",
- "xscan-lib",
-]
-
-[[package]]
-name = "xscan-h2c"
-version = "0.1.1"
-dependencies = [
- "bytes",
- "nill",
- "prost 0.14.1",
- "rkyv",
- "thiserror 2.0.16",
- "tonic 0.14.1",
- "tonic-prost-build",
- "tonic-web",
-]
-
-[[package]]
-name = "xscan-h2s"
-version = "0.1.1"
-dependencies = [
- "nill",
- "thiserror 2.0.16",
- "xscan-h2c",
- "xscan-lib",
-]
-
-[[package]]
-name = "xscan-h3c"
-version = "0.1.1"
-dependencies = [
- "xscan-lib",
-]
-
-[[package]]
-name = "xscan-lib"
-version = "0.1.1"
-dependencies = [
- "mimalloc",
- "thiserror 2.0.16",
- "tracing",
- "tracing-browser-subscriber",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "xscan-server"
-version = "0.1.1"
-dependencies = [
- "axum 0.8.4",
- "futures",
- "nill",
- "serde",
- "thiserror 2.0.16",
- "tokio",
- "tondi-grpc-client",
- "tondi-grpc-core",
- "tondi-notify",
- "tondi-rpc-core",
- "tondi-utils",
- "tower 0.5.2",
- "tower-http 0.6.6",
- "xscan-db",
- "xscan-h2c",
- "xscan-h2s",
- "xscan-lib",
-]
-
-[[package]]
-name = "xscan-w2c"
-version = "0.1.1"
-dependencies = [
- "bytes",
- "console_error_panic_hook",
- "futures",
- "gloo",
- "http 1.3.1",
- "http-body",
- "http-body-util",
- "nill",
- "thiserror 2.0.16",
- "tower 0.5.2",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "wasm-streams",
- "web-sys",
- "xscan-h2c",
- "xscan-lib",
-]
-
-[[package]]
-name = "xscan-w3c"
-version = "0.1.1"
-dependencies = [
- "xscan-lib",
-]
-
-[[package]]
 name = "zerocopy"
 version = "0.8.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4983,3 +5487,31 @@ name = "zeroize"
 version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ced3678a2879b30306d323f4542626697a464a97c0a07c9aebf7ebca65cd4dde"
+
+[[package]]
+name = "zstd"
+version = "0.13.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e91ee311a569c327171651566e07972200e76fcfe2242a4fa446149a3881c08a"
+dependencies = [
+ "zstd-safe",
+]
+
+[[package]]
+name = "zstd-safe"
+version = "7.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f49c4d5f0abb602a93fb8736af2a4f4dd9512e36f7f570d66e65ff867ed3b9d"
+dependencies = [
+ "zstd-sys",
+]
+
+[[package]]
+name = "zstd-sys"
+version = "2.0.15+zstd.1.5.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb81183ddd97d0c74cedf1d50d85c8d08c1b8b68ee863bdee9e706eedba1a237"
+dependencies = [
+ "cc",
+ "pkg-config",
+]

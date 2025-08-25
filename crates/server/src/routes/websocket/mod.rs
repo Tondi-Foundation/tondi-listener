@@ -1,17 +1,15 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::ws::{Message, WebSocket, WebSocketUpgrade},
-    response::Response,
+    extract::{ws::WebSocket, WebSocketUpgrade},
+    response::IntoResponse,
+    routing::get,
+    Router,
 };
-use nill::{Nil, nil};
-use tondi_notify::events::EventType;
-use xscan_lib::log::{error, info, warn};
+use tondi_scan_lib::log::{error, info, warn};
+use tokio::sync::broadcast;
 
-use crate::{
-    error::Result,
-    extensions::client_pool::{ClientPool, listener::ListenerManager},
-};
+use crate::ctx::Context;
 
 pub async fn handler(client_pool: ClientPool, ws: WebSocketUpgrade) -> Result<Response> {
     let client = client_pool.get().await?;

@@ -1,7 +1,7 @@
 [package]
-name = "xscan-h2s"
+name = "tondi-scan-h2s"
 
-description = "xscan-h2s"
+description = "Tondi Scan HTTP/2 Server"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -12,6 +12,7 @@ crate-type = ["cdylib", "rlib", "staticlib"]
 
 
 [features]
+default = []
 
 
 [lints]
@@ -19,11 +20,11 @@ workspace = true
 
 
 [dependencies]
-xscan-h2c = { workspace = true }
-xscan-lib = { workspace = true }
-
-nill      = { workspace = true }
+nill = { workspace = true }
+prost = { workspace = true }
 thiserror = { workspace = true }
+tonic = { workspace = true, features = ["codegen"] }
+tondi-scan-h2c = { workspace = true }
 
 
 [build-dependencies]

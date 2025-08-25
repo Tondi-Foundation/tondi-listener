@@ -1,10 +1,17 @@
-use xscan_db::{
-    diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper},
-    models::transaction::Tx,
-    schema::table::TTx,
+use tondi_scan_db::{
+    diesel::{prelude::*, r2d2::ConnectionManager, PgConnection},
+    models::transaction::Transaction,
+    schema::table::TTransaction,
 };
+use axum::extract::Query;
+use serde::Deserialize;
+use nill::{Nil, nil};
 
-use crate::{ctx::pg_database::PgDb, shared::data::Data};
+use crate::{
+    ctx::Context,
+    error::Result,
+    shared::data::Inner as DataInner,
+};
 
 pub async fn get(db: PgDb<'_>) -> Data<Tx> {
     let mut conn = db.get()?;
