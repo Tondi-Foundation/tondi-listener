@@ -22,8 +22,7 @@ pub enum WrpcError {
     Rpc(String),
     #[error("Invalid event type: {0}")]
     InvalidEventType(String),
-    #[error("Max reconnection attempts reached")]
-    MaxReconnectAttempts,
+
 }
 
 impl From<JsValue> for WrpcError {
@@ -58,8 +57,6 @@ pub struct WrpcConfig {
     pub url: String,
     pub encoding: String,
     pub network: String,
-    pub reconnect_attempts: u32,
-    pub reconnect_delay_ms: u32,
 }
 
 impl WrpcConfig {
@@ -73,25 +70,17 @@ impl WrpcConfig {
             return Err(WrpcError::Config("URL must start with ws:// or wss://".to_string()));
         }
         
-        if self.reconnect_attempts == 0 {
-            return Err(WrpcError::Config("Reconnect attempts must be greater than 0".to_string()));
-        }
-        
-        if self.reconnect_delay_ms == 0 {
-            return Err(WrpcError::Config("Reconnect delay must be greater than 0".to_string()));
-        }
+
         
         Ok(())
     }
     
     /// Create a new config with validation
-    pub fn new(url: String, encoding: String, network: String, reconnect_attempts: u32, reconnect_delay_ms: u32) -> WrpcResult<Self> {
+    pub fn new(url: String, encoding: String, network: String) -> WrpcResult<Self> {
         let config = Self {
             url,
             encoding,
             network,
-            reconnect_attempts,
-            reconnect_delay_ms,
         };
         config.validate()?;
         Ok(config)
@@ -104,8 +93,6 @@ impl Default for WrpcConfig {
             url: "ws://8.210.45.192:18610".to_string(),
             encoding: "json".to_string(),
             network: "devnet".to_string(),
-            reconnect_attempts: 5,
-            reconnect_delay_ms: 1000,
         }
     }
 }
@@ -169,7 +156,6 @@ pub struct WrpcClient {
     event_handlers: HashMap<String, js_sys::Function>,
     pending_requests: HashMap<u64, js_sys::Function>,
     connected: bool,
-    current_reconnect_attempt: u32,
 }
 
 impl WrpcClient {
@@ -184,7 +170,6 @@ impl WrpcClient {
             event_handlers: HashMap::new(),
             pending_requests: HashMap::new(),
             connected: false,
-            current_reconnect_attempt: 0,
         })
     }
     
@@ -194,14 +179,11 @@ impl WrpcClient {
     }
     
     /// Get connection statistics
-    pub fn get_stats(&self) -> (bool, usize, usize, bool, u32, u32) {
+    pub fn get_stats(&self) -> (bool, usize, usize) {
         (
             self.connected,
             self.event_handlers.len(),
             self.pending_requests.len(),
-            self.current_reconnect_attempt > 0,
-            self.current_reconnect_attempt,
-            self.config.reconnect_attempts,
         )
     }
     
@@ -276,7 +258,6 @@ impl WrpcClient {
         
         self.websocket = Some(websocket);
         self.connected = true;
-        self.current_reconnect_attempt = 0;
         
         log::info!("Successfully connected to wRPC server");
         Ok(())
@@ -297,7 +278,6 @@ impl WrpcClient {
         
         self.websocket = None;
         self.connected = false;
-        self.current_reconnect_attempt = 0;
         
         // Clear pending requests since we're disconnecting
         self.clear_pending_requests();
@@ -415,40 +395,7 @@ impl WrpcClient {
         }
     }
     
-    /// Attempt to reconnect
-    pub async fn reconnect(&mut self) -> WrpcResult<()> {
-        if self.current_reconnect_attempt >= self.config.reconnect_attempts {
-            return Err(WrpcError::MaxReconnectAttempts);
-        }
-        
-        if self.connected {
-            return Err(WrpcError::Connection("Already connected".to_string()));
-        }
-        
-        self.current_reconnect_attempt += 1;
-        log::info!("Attempting to reconnect (attempt {}/{})", self.current_reconnect_attempt, self.config.reconnect_attempts);
-        
-        // Note: In WASM environment, reconnection delay is effectively a no-op
-        // but provides the intended delay behavior for future implementations
-        
-        // Attempt to connect
-        match self.connect().await {
-            Ok(()) => {
-                log::info!("Reconnection successful on attempt {}", self.current_reconnect_attempt);
-                Ok(())
-            }
-            Err(e) => {
-                log::warn!("Reconnection attempt {} failed: {:?}", self.current_reconnect_attempt, e);
-                Err(e)
-            }
-        }
-    }
-    
-    /// Reset reconnection attempts counter
-    pub fn reset_reconnect_attempts(&mut self) {
-        self.current_reconnect_attempt = 0;
-        log::debug!("Reconnection attempts counter reset");
-    }
+
     
     /// Clear pending requests
     pub fn clear_pending_requests(&mut self) {
@@ -473,7 +420,7 @@ impl WrpcClientJs {
     }
     
     /// Helper function to get client statistics as a tuple
-    fn get_client_stats(&self) -> (bool, usize, usize, bool, u32, u32) {
+    fn get_client_stats(&self) -> (bool, usize, usize) {
         self.inner.get_stats()
     }
 }
@@ -511,14 +458,11 @@ impl WrpcClientJs {
     
     /// Get connection statistics
     pub fn get_stats(&self) -> JsValue {
-        let (connected, event_handlers, pending_requests, reconnecting, current_attempt, max_attempts) = self.get_client_stats();
+        let (connected, event_handlers, pending_requests) = self.get_client_stats();
         let stats = serde_json::json!({
             "connected": connected,
             "event_handlers": event_handlers,
             "pending_requests": pending_requests,
-            "reconnecting": reconnecting,
-            "reconnect_attempts": current_attempt,
-            "max_reconnect_attempts": max_attempts,
         });
         Self::serialize_to_js(&stats)
     }
@@ -571,30 +515,7 @@ impl WrpcClientJs {
             .map_err(|e| format_js_error("Notification", &e).into())
     }
     
-    /// Attempt to reconnect
-    pub async fn reconnect(&mut self) -> Result<(), JsValue> {
-        self.inner.reconnect().await
-            .map_err(|e| format_js_error("Reconnection", &e).into())
-    }
-    
-    /// Reset reconnection attempts
-    pub fn reset_reconnect_attempts(&mut self) {
-        self.inner.reset_reconnect_attempts();
-    }
-    
-    /// Get reconnection statistics
-    /// 
-    /// This is a convenience method that extracts reconnection-specific statistics
-    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
-    #[doc(hidden)]
-    pub fn get_reconnection_stats(&self) -> JsValue {
-        let (_, _, _, _, current_attempt, max_attempts) = self.get_client_stats();
-        let stats = serde_json::json!({
-            "current_attempt": current_attempt,
-            "max_attempts": max_attempts,
-        });
-        Self::serialize_to_js(&stats)
-    }
+
     
     /// Get available event types
     pub fn get_available_events(&self) -> JsValue {
@@ -602,93 +523,8 @@ impl WrpcClientJs {
         Self::serialize_to_js(&events)
     }
     
-    /// Get client configuration
-    /// 
-    /// This is a convenience method for debugging and configuration inspection.
-    /// The configuration is also available through the main get_stats() method.
-    #[doc(hidden)]
-    pub fn get_config(&self) -> JsValue {
-        let config = self.inner.config();
-        let config_data = serde_json::json!({
-            "url": config.url,
-            "encoding": config.encoding,
-            "network": config.network,
-            "reconnect_attempts": config.reconnect_attempts,
-            "reconnect_delay_ms": config.reconnect_delay_ms,
-        });
-        Self::serialize_to_js(&config_data)
-    }
-    
     /// Clear all pending requests
     pub fn clear_pending_requests(&mut self) {
         self.inner.clear_pending_requests();
-    }
-    
-    /// Check if client is currently reconnecting
-    /// 
-    /// This is a convenience method that extracts reconnection status
-    /// from the main get_stats() method. For comprehensive status, use get_stats().
-    #[doc(hidden)]
-    pub fn is_reconnecting(&self) -> bool {
-        let (_, _, _, reconnecting, _, _) = self.get_client_stats();
-        reconnecting
-    }
-    
-    /// Get current reconnection attempt number
-    /// 
-    /// This is a convenience method that extracts current reconnection attempt
-    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
-    #[doc(hidden)]
-    pub fn get_current_reconnect_attempt(&self) -> u32 {
-        let (_, _, _, _, current_attempt, _) = self.get_client_stats();
-        current_attempt
-    }
-    
-    /// Get maximum reconnection attempts
-    /// 
-    /// This is a convenience method that extracts max reconnection attempts
-    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
-    #[doc(hidden)]
-    pub fn get_max_reconnect_attempts(&self) -> u32 {
-        let (_, _, _, _, _, max_attempts) = self.get_client_stats();
-        max_attempts
-    }
-    
-    /// Get number of registered event handlers
-    /// 
-    /// This is a convenience method that extracts event handler count
-    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
-    #[doc(hidden)]
-    pub fn get_event_handler_count(&self) -> usize {
-        let (_, event_handlers, _, _, _, _) = self.get_client_stats();
-        event_handlers
-    }
-    
-    /// Get number of pending requests
-    /// 
-    /// This is a convenience method that extracts pending request count
-    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
-    #[doc(hidden)]
-    pub fn get_pending_request_count(&self) -> usize {
-        let (_, _, pending_requests, _, _, _) = self.get_client_stats();
-        pending_requests
-    }
-    
-    /// Validate event type string
-    pub fn validate_event_type(&self, event_type: &str) -> bool {
-        WrpcEventType::from_str(event_type).is_ok()
-    }
-    
-    /// Get client version information
-    /// 
-    /// This is a convenience method for debugging and version checking.
-    #[doc(hidden)]
-    pub fn get_version(&self) -> JsValue {
-        let version_info = serde_json::json!({
-            "name": "tondi-scan-wasm2-client",
-            "version": env!("CARGO_PKG_VERSION"),
-            "features": ["websocket", "events", "rpc", "reconnection"]
-        });
-        Self::serialize_to_js(&version_info)
     }
 }
