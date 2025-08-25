@@ -226,18 +226,21 @@ impl WrpcClient {
                 if let Ok(data) = serde_json::from_str::<Value>(&text) {
                     log::debug!("Received WebSocket message: {:?}", data);
                     
+                    // Serialize data once for reuse
+                    let js_data = serde_wasm_bindgen::to_value(&data).unwrap_or_default();
+                    
                     // Handle different message types
                     if let Some(method) = data.get("method").and_then(|m| m.as_str()) {
                         // This is an event notification
                         if let Some(handler) = event_handlers.get(method) {
-                            if let Err(e) = handler.call1(&wasm_bindgen::JsValue::NULL, &serde_wasm_bindgen::to_value(&data).unwrap_or_default()) {
+                            if let Err(e) = handler.call1(&wasm_bindgen::JsValue::NULL, &js_data) {
                                 log::error!("Failed to call event handler for {}: {:?}", method, e);
                             }
                         }
                     } else if let Some(id) = data.get("id").and_then(|i| i.as_u64()) {
                         // This is a response to an RPC call
                         if let Some(callback) = pending_requests.get(&id) {
-                            if let Err(e) = callback.call1(&wasm_bindgen::JsValue::NULL, &serde_wasm_bindgen::to_value(&data).unwrap_or_default()) {
+                            if let Err(e) = callback.call1(&wasm_bindgen::JsValue::NULL, &js_data) {
                                 log::error!("Failed to call RPC callback for id {}: {:?}", id, e);
                             }
                         }
@@ -498,6 +501,22 @@ pub struct WrpcClientJs {
     inner: WrpcClient,
 }
 
+impl WrpcClientJs {
+    /// Helper function to serialize data to JsValue with error handling
+    fn serialize_to_js<T: serde::Serialize>(data: &T) -> JsValue {
+        serde_wasm_bindgen::to_value(data).unwrap_or_else(|_| {
+            serde_wasm_bindgen::to_value(&serde_json::json!({
+                "error": "Failed to serialize data"
+            })).unwrap_or_default()
+        })
+    }
+    
+    /// Helper function to get client statistics as a tuple
+    fn get_client_stats(&self) -> (bool, usize, usize, bool, u32, u32) {
+        self.inner.get_stats()
+    }
+}
+
 #[wasm_bindgen]
 impl WrpcClientJs {
     /// Create new wRPC Client
@@ -531,19 +550,16 @@ impl WrpcClientJs {
     
     /// Get connection statistics
     pub fn get_stats(&self) -> JsValue {
-        let (connected, event_handlers, pending_requests, reconnecting, current_attempt, max_attempts) = self.inner.get_stats();
-        serde_wasm_bindgen::to_value(&serde_json::json!({
+        let (connected, event_handlers, pending_requests, reconnecting, current_attempt, max_attempts) = self.get_client_stats();
+        let stats = serde_json::json!({
             "connected": connected,
             "event_handlers": event_handlers,
             "pending_requests": pending_requests,
             "reconnecting": reconnecting,
             "reconnect_attempts": current_attempt,
             "max_reconnect_attempts": max_attempts,
-        })).unwrap_or_else(|_| {
-            serde_wasm_bindgen::to_value(&serde_json::json!({
-                "error": "Failed to serialize statistics"
-            })).unwrap_or_default()
-        })
+        });
+        Self::serialize_to_js(&stats)
     }
     
     /// Subscribe to Event
@@ -600,37 +616,31 @@ impl WrpcClientJs {
     
     /// Get reconnection statistics
     pub fn get_reconnection_stats(&self) -> JsValue {
-        let (_, _, _, _, current_attempt, max_attempts) = self.inner.get_stats();
-        serde_wasm_bindgen::to_value(&serde_json::json!({
+        let (_, _, _, _, current_attempt, max_attempts) = self.get_client_stats();
+        let stats = serde_json::json!({
             "current_attempt": current_attempt,
             "max_attempts": max_attempts,
-        })).unwrap_or_else(|_| {
-            serde_wasm_bindgen::to_value(&serde_json::json!({
-                "error": "Failed to serialize reconnection statistics"
-            })).unwrap_or_default()
-        })
+        });
+        Self::serialize_to_js(&stats)
     }
     
     /// Get available event types
     pub fn get_available_events(&self) -> JsValue {
         let events = WrpcEventType::all_event_strings();
-        serde_wasm_bindgen::to_value(&events).unwrap_or_default()
+        Self::serialize_to_js(&events)
     }
     
     /// Get client configuration
     pub fn get_config(&self) -> JsValue {
         let config = self.inner.config();
-        serde_wasm_bindgen::to_value(&serde_json::json!({
+        let config_data = serde_json::json!({
             "url": config.url,
             "encoding": config.encoding,
             "network": config.network,
             "reconnect_attempts": config.reconnect_attempts,
             "reconnect_delay_ms": config.reconnect_delay_ms,
-        })).unwrap_or_else(|_| {
-            serde_wasm_bindgen::to_value(&serde_json::json!({
-                "error": "Failed to serialize configuration"
-            })).unwrap_or_default()
-        })
+        });
+        Self::serialize_to_js(&config_data)
     }
     
     /// Clear all pending requests
@@ -640,31 +650,31 @@ impl WrpcClientJs {
     
     /// Check if client is currently reconnecting
     pub fn is_reconnecting(&self) -> bool {
-        let (_, _, _, reconnecting, _, _) = self.inner.get_stats();
+        let (_, _, _, reconnecting, _, _) = self.get_client_stats();
         reconnecting
     }
     
     /// Get current reconnection attempt number
     pub fn get_current_reconnect_attempt(&self) -> u32 {
-        let (_, _, _, _, current_attempt, _) = self.inner.get_stats();
+        let (_, _, _, _, current_attempt, _) = self.get_client_stats();
         current_attempt
     }
     
     /// Get maximum reconnection attempts
     pub fn get_max_reconnect_attempts(&self) -> u32 {
-        let (_, _, _, _, _, max_attempts) = self.inner.get_stats();
+        let (_, _, _, _, _, max_attempts) = self.get_client_stats();
         max_attempts
     }
     
     /// Get number of registered event handlers
     pub fn get_event_handler_count(&self) -> usize {
-        let (_, event_handlers, _, _, _, _) = self.inner.get_stats();
+        let (_, event_handlers, _, _, _, _) = self.get_client_stats();
         event_handlers
     }
     
     /// Get number of pending requests
     pub fn get_pending_request_count(&self) -> usize {
-        let (_, _, pending_requests, _, _, _) = self.inner.get_stats();
+        let (_, _, pending_requests, _, _, _) = self.get_client_stats();
         pending_requests
     }
     
@@ -675,10 +685,11 @@ impl WrpcClientJs {
     
     /// Get client version information
     pub fn get_version(&self) -> JsValue {
-        serde_wasm_bindgen::to_value(&serde_json::json!({
+        let version_info = serde_json::json!({
             "name": "tondi-scan-wasm2-client",
             "version": env!("CARGO_PKG_VERSION"),
             "features": ["websocket", "events", "rpc", "reconnection"]
-        })).unwrap_or_default()
+        });
+        Self::serialize_to_js(&version_info)
     }
 }
