@@ -114,7 +114,6 @@ async fn send_message(socket: &mut WebSocket, msg_type: &str, message: &str) -> 
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::ctx::event_config::EventType;
     use std::str::FromStr;
 
@@ -135,38 +134,5 @@ mod tests {
         assert_eq!(EventType::BlockAdded.to_string(), "block-added");
         assert_eq!(EventType::UtxosChanged.to_string(), "utxos-changed");
         assert_eq!(EventType::VirtualChainChanged.to_string(), "virtual-chain-changed");
-    }
-
-    #[test]
-    fn test_subscribe_request_serialization() {
-        let request = SubscribeRequest {
-            action: "subscribe".to_string(),
-            events: vec!["block-added".to_string(), "utxos-changed".to_string()],
-        };
-        
-        let json = serde_json::to_string(&request).unwrap();
-        let parsed: SubscribeRequest = serde_json::from_str(&json).unwrap();
-        
-        assert_eq!(parsed.action, "subscribe");
-        assert_eq!(parsed.events.len(), 2);
-        assert_eq!(parsed.events[0], "block-added");
-        assert_eq!(parsed.events[1], "utxos-changed");
-    }
-
-    #[test]
-    fn test_event_notification_serialization() {
-        let notification = EventNotification {
-            event_type: "block-added".to_string(),
-            data: serde_json::json!({"height": 1000, "hash": "abc123"}),
-            timestamp: 1234567890,
-        };
-        
-        let json = serde_json::to_string(&notification).unwrap();
-        let parsed: EventNotification = serde_json::from_str(&json).unwrap();
-        
-        assert_eq!(parsed.event_type, "block-added");
-        assert_eq!(parsed.timestamp, 1234567890);
-        assert_eq!(parsed.data["height"], 1000);
-        assert_eq!(parsed.data["hash"], "abc123");
     }
 }

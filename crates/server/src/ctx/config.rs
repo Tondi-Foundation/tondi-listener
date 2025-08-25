@@ -112,7 +112,7 @@ pub struct Config {
     pub wrpc: WrpcConfig,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct WrpcConfig {
     /// wRPC protocol type: "ws", "wss"
     #[serde(default = "default_wrpc_protocol")]
@@ -137,6 +137,19 @@ pub struct WrpcConfig {
     /// Whether to enable wRPC (if true, will prioritize wRPC over gRPC)
     #[serde(default = "default_wrpc_enabled")]
     pub enabled: bool,
+}
+
+impl Default for WrpcConfig {
+    fn default() -> Self {
+        Self {
+            protocol: default_wrpc_protocol(),
+            host: default_wrpc_host(),
+            port: default_wrpc_port(),
+            network: default_wrpc_network(),
+            encoding: default_wrpc_encoding(),
+            enabled: default_wrpc_enabled(),
+        }
+    }
 }
 
 fn default_wrpc_protocol() -> String {
@@ -460,8 +473,8 @@ impl WrpcConfig {
     
     /// Get default port
     pub fn get_default_port(&self) -> u16 {
-        let network_type = self.get_network_type().unwrap_or(NetworkType::Devnet);
-        let encoding = self.get_encoding().unwrap_or(WrpcEncoding::Borsh);
+        let network_type = self.get_network_type().unwrap_or_else(|_| NetworkType::Devnet);
+        let encoding = self.get_encoding().unwrap_or_else(|_| WrpcEncoding::Borsh);
         
         match encoding {
             WrpcEncoding::Borsh => network_type.default_borsh_rpc_port(),
