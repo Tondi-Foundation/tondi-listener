@@ -1,11 +1,11 @@
 use nill::{Nil, nil};
 use tower_http::cors::CorsLayer;
-use tondi_scan_h2c::{
+use tondi_scan_http2_client::{
     tonic::{codec::CompressionEncoding::Gzip, transport::Server},
     web::GrpcWebLayer,
 };
-use tondi_scan_h2s::pingpong;
-use tondi_scan_lib::log::{info, init_tracing_subscriber_log};
+use tondi_scan_http2_server::pingpong;
+use tondi_scan_library::log::{info, init_tracing_subscriber_log};
 use tondi_scan_server::{
     ctx::Context,
     error::Result,

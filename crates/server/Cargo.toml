@@ -17,9 +17,9 @@ workspace = true
 
 [dependencies]
 tondi-scan-db  = { workspace = true }
-tondi-scan-h2c = { workspace = true, features = ["gzip", "router", "transport"] }
-tondi-scan-h2s = { workspace = true }
-tondi-scan-lib = { workspace = true, features = ["mimalloc"] }
+tondi-scan-http2-client = { workspace = true, features = ["gzip", "router", "transport"] }
+tondi-scan-http2-server = { workspace = true }
+tondi-scan-library = { workspace = true, features = ["mimalloc"] }
 
 axum       = { workspace = true, features = ["http2", "json", "query", "tokio", "tracing", "ws"] }
 futures    = { workspace = true }

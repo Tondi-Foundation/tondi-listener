@@ -1,5 +1,5 @@
 use thiserror::Error;
-use tondi_scan_h2c::tonic::Status as TonicStatus;
+use tondi_scan_http2_client::tonic::Status as TonicStatus;
 
 #[derive(Debug, Error)]
 pub enum Error {

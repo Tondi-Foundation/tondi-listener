@@ -77,15 +77,16 @@ cargo run -p tondi-scan-server --bin router
 ```
 tondi-scan/
 ├── crates/
-│   ├── db/          # Database layer (Diesel ORM)
-│   ├── h2c/         # HTTP/2 client
-│   ├── h2s/         # HTTP/2 server
-│   ├── lib/         # Shared library
-│   ├── server/      # Main server
-│   ├── w2c/         # WebAssembly client
-│   └── w3c/         # WebAssembly components
-├── protowire/       # Protocol Buffers definitions
-└── src/             # Root library
+│   ├── db/              # Database layer (Diesel ORM)
+│   ├── http2-client/    # HTTP/2 client
+│   ├── http2-server/    # HTTP/2 server
+│   ├── http3-client/    # HTTP/3 client
+│   ├── library/         # Shared library
+│   ├── server/          # Main server
+│   ├── wasm2-client/    # WebAssembly client
+│   └── wasm3-client/    # WebAssembly components
+├── protowire/           # Protocol Buffers definitions
+└── src/                 # Root library
 ```
 
 ## Development

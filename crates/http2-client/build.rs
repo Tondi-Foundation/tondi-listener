@@ -25,7 +25,7 @@ fn main() -> std::io::Result<()> {
     // Create the output directory if it doesn't exist
     std::fs::create_dir_all("target/proto")?;
     
-    // Get the workspace root directory (go up two levels from crates/h2c)
+    // Get the workspace root directory (go up two levels from crates/http2-client)
     let current_dir = std::env::current_dir()?;
     let workspace_root = current_dir
         .parent()

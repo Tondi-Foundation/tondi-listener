@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-w2c"
+name = "tondi-scan-wasm2-client"
 
 description = "Tondi Scan WebAssembly Client"
 edition     = { workspace = true }
@@ -12,8 +12,8 @@ default = []
 
 
 [dependencies]
-tondi-scan-h2c = { workspace = true }
-tondi-scan-lib = { workspace = true, features = ["tracing-browser"] }
+tondi-scan-http2-client = { workspace = true }
+tondi-scan-library = { workspace = true, features = ["tracing-browser"] }
 
 console_error_panic_hook = { workspace = true }
 futures = { workspace = true }

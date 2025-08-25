@@ -1,5 +1,5 @@
 use nill::{Nil, nil};
-use tondi_scan_h2c::{
+use tondi_scan_http2_client::{
     protowire::{Ping, Pong},
     tonic::Status,
 };

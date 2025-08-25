@@ -1,7 +1,7 @@
 [package]
-name = "tondi-scan-w3c"
+name = "tondi-scan-http3-client"
 
-description = "Tondi Scan WebAssembly Components"
+description = "Tondi Scan HTTP/3 Client"
 edition     = { workspace = true }
 license     = { workspace = true }
 version     = { workspace = true }
@@ -12,7 +12,7 @@ default = []
 
 
 [dependencies]
-wasm-bindgen = { workspace = true }
+tondi-scan-library = { workspace = true }
 
 
 [lints]

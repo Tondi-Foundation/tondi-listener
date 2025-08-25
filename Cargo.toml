@@ -12,12 +12,12 @@ version = "0.1.1"
 [workspace.dependencies]
 # Member
 tondi-scan-db  = { path = "crates/db", version = "0.1.1" }
-tondi-scan-h2c = { path = "crates/h2c", version = "0.1.1" }
-tondi-scan-h2s = { path = "crates/h2s", version = "0.1.1" }
-tondi-scan-h3c = { path = "crates/h3c", version = "0.1.1" }
-tondi-scan-lib = { path = "crates/lib", version = "0.1.1" }
-tondi-scan-w2c = { path = "crates/w2c", version = "0.1.1" }
-tondi-scan-w3c = { path = "crates/w3c", version = "0.1.1" }
+tondi-scan-http2-client = { path = "crates/http2-client", version = "0.1.1" }
+tondi-scan-http2-server = { path = "crates/http2-server", version = "0.1.1" }
+tondi-scan-http3-client = { path = "crates/http3-client", version = "0.1.1" }
+tondi-scan-library = { path = "crates/library", version = "0.1.1" }
+tondi-scan-wasm2-client = { path = "crates/wasm2-client", version = "0.1.1" }
+tondi-scan-wasm3-client = { path = "crates/wasm3-client", version = "0.1.1" }
 
 # Extern
 axum                       = { default-features = false, version = "0.8" }
@@ -70,10 +70,10 @@ default = []
 
 
 [dependencies]
-tondi-scan-h2c = { workspace = true }
-tondi-scan-h2s = { workspace = true }
-tondi-scan-lib = { workspace = true }
-tondi-scan-w2c = { workspace = true }
+tondi-scan-http2-client = { workspace = true }
+tondi-scan-http2-server = { workspace = true }
+tondi-scan-library = { workspace = true }
+tondi-scan-wasm2-client = { workspace = true }
 
 
 [workspace.lints.clippy]

@@ -1,7 +1,7 @@
 use axum::Router;
 use nill::{Nil, nil};
 use tokio::net::TcpListener;
-use tondi_scan_lib::log::{info, init_tracing_subscriber_log};
+use tondi_scan_library::log::{info, init_tracing_subscriber_log};
 use tondi_scan_server::{
     ctx::Context,
     error::Result,

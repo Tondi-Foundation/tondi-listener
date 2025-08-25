@@ -6,7 +6,7 @@ use axum::{
     routing::get,
     Router,
 };
-use tondi_scan_lib::log::{error, info, warn};
+use tondi_scan_library::log::{error, info, warn};
 use tokio::sync::broadcast;
 
 use crate::ctx::Context;

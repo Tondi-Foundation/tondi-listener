@@ -4022,10 +4022,10 @@ dependencies = [
 name = "tondi-scan"
 version = "0.1.1"
 dependencies = [
- "tondi-scan-h2c",
- "tondi-scan-h2s",
- "tondi-scan-lib",
- "tondi-scan-w2c",
+ "tondi-scan-http2-client",
+ "tondi-scan-http2-server",
+ "tondi-scan-library",
+ "tondi-scan-wasm2-client",
 ]
 
 [[package]]
@@ -4038,7 +4038,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "tondi-scan-h2c"
+name = "tondi-scan-http2-client"
 version = "0.1.1"
 dependencies = [
  "prost 0.14.1",
@@ -4049,25 +4049,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "tondi-scan-h2s"
+name = "tondi-scan-http2-server"
 version = "0.1.1"
 dependencies = [
  "nill",
  "prost 0.14.1",
  "thiserror 2.0.16",
- "tondi-scan-h2c",
+ "tondi-scan-http2-client",
  "tonic 0.14.1",
 ]
 
 [[package]]
-name = "tondi-scan-h3c"
+name = "tondi-scan-http3-client"
 version = "0.1.1"
 dependencies = [
- "tondi-scan-lib",
+ "tondi-scan-library",
 ]
 
 [[package]]
-name = "tondi-scan-lib"
+name = "tondi-scan-library"
 version = "0.1.1"
 dependencies = [
  "mimalloc",
@@ -4094,16 +4094,16 @@ dependencies = [
  "tondi-notify 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
  "tondi-rpc-core 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
  "tondi-scan-db",
- "tondi-scan-h2c",
- "tondi-scan-h2s",
- "tondi-scan-lib",
+ "tondi-scan-http2-client",
+ "tondi-scan-http2-server",
+ "tondi-scan-library",
  "tondi-utils 0.17.0 (git+ssh://git@github.com/AvatoLabs/Tondi.git?branch=main)",
  "tower 0.5.2",
  "tower-http 0.6.6",
 ]
 
 [[package]]
-name = "tondi-scan-w2c"
+name = "tondi-scan-wasm2-client"
 version = "0.1.1"
 dependencies = [
  "console_error_panic_hook",
@@ -4113,8 +4113,8 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "thiserror 2.0.16",
- "tondi-scan-h2c",
- "tondi-scan-lib",
+ "tondi-scan-http2-client",
+ "tondi-scan-library",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-streams",
@@ -4122,7 +4122,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "tondi-scan-w3c"
+name = "tondi-scan-wasm3-client"
 version = "0.1.1"
 dependencies = [
  "wasm-bindgen",

@@ -1,4 +1,4 @@
-use tondi_scan_h2c::{
+use tondi_scan_http2_client::{
     protowire::{
         ping_pong_service_server::{PingPongService, PingPongServiceServer},
         Ping, Pong,

@@ -1,5 +1,5 @@
 [package]
-name = "tondi-scan-lib"
+name = "tondi-scan-library"
 
 description = "Tondi Scan Shared Library"
 edition     = { workspace = true }

@@ -10,7 +10,7 @@ use tondi_scan_db::{
     },
     error::Error as TondiScanDbError,
 };
-use tondi_scan_h2c::tonic::transport::Error as TonicTransportError;
+use tondi_scan_http2_client::tonic::transport::Error as TonicTransportError;
 
 use crate::{
     ctx::config::ConfigError,

@@ -1,4 +1,4 @@
-pub use tondi_scan_h2c;
-pub use tondi_scan_h2s;
-pub use tondi_scan_lib;
-pub use tondi_scan_w2c;
+pub use tondi_scan_http2_client;
+pub use tondi_scan_http2_server;
+pub use tondi_scan_library;
+pub use tondi_scan_wasm2_client;
