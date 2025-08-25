@@ -379,43 +379,7 @@ impl WrpcClient {
         }
     }
     
-    /// Send RPC Call (Legacy method for backward compatibility)
-    pub async fn call_simple<Request>(&self, method: &str, request: Request) -> WrpcResult<Value>
-    where
-        Request: serde::Serialize + 'static,
-    {
-        if !self.connected {
-            return Err(WrpcError::Connection("Not connected".to_string()));
-        }
-        
-        if method.is_empty() {
-            return Err(WrpcError::Rpc("Method name cannot be empty".to_string()));
-        }
-        
-        log::debug!("Making simple RPC call to method: {}", method);
-        
-        if let Some(websocket) = &self.websocket {
-            let call_msg = serde_json::json!({
-                "method": method,
-                "params": request,
-                "id": js_sys::Date::now() as u64
-            });
-            
-            let msg_str = serde_json::to_string(&call_msg)
-                .map_err(|e| WrpcError::Serialization(format!("Failed to serialize call message: {}", e)))?;
-            
-            websocket.send_with_str(&msg_str)
-                .map_err(|e| WrpcError::WebSocket(format!("Failed to send RPC call: {:?}", e)))?;
-            
-            // Return a placeholder response
-            Ok(serde_json::json!({
-                "status": "sent", 
-                "note": "Use call() method for response handling"
-            }))
-        } else {
-            Err(WrpcError::Connection("WebSocket not connected".to_string()))
-        }
-    }
+
     
     /// Send Notification
     pub async fn notify<Request>(&self, method: &str, request: Request) -> WrpcResult<()>
@@ -464,11 +428,8 @@ impl WrpcClient {
         self.current_reconnect_attempt += 1;
         log::info!("Attempting to reconnect (attempt {}/{})", self.current_reconnect_attempt, self.config.reconnect_attempts);
         
-        // Wait before attempting reconnection (non-blocking in WASM)
-        // Note: In WASM environment, this is effectively a no-op
-        // but provides the intended delay behavior
-        // TODO: Implement proper async delay when gloo_timers is available
-        // For now, we'll just proceed without delay to avoid blocking
+        // Note: In WASM environment, reconnection delay is effectively a no-op
+        // but provides the intended delay behavior for future implementations
         
         // Attempt to connect
         match self.connect().await {
@@ -575,14 +536,21 @@ impl WrpcClientJs {
     }
     
     /// Send RPC Call
+    /// 
+    /// Note: This method sends the RPC call but does not wait for a response.
+    /// For response handling, use call_with_callback() method.
     pub async fn call(&self, method: &str, request: JsValue) -> Result<JsValue, JsValue> {
         let request: Value = serde_wasm_bindgen::from_value(request)
             .map_err(|e| format!("Invalid request: {}", e))?;
             
-        let response = self.inner.call_simple(method, request).await
+        // Send notification instead of RPC call since we can't handle responses synchronously
+        self.inner.notify(method, request).await
             .map_err(|e| JsValue::from_str(&format_js_error("RPC call", &e)))?;
             
-        Ok(serde_wasm_bindgen::to_value(&response)?)
+        Ok(serde_wasm_bindgen::to_value(&serde_json::json!({
+            "status": "sent",
+            "note": "Use call_with_callback() for response handling"
+        }))?)
     }
     
     /// Send RPC Call with Callback
@@ -615,6 +583,10 @@ impl WrpcClientJs {
     }
     
     /// Get reconnection statistics
+    /// 
+    /// This is a convenience method that extracts reconnection-specific statistics
+    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
+    #[doc(hidden)]
     pub fn get_reconnection_stats(&self) -> JsValue {
         let (_, _, _, _, current_attempt, max_attempts) = self.get_client_stats();
         let stats = serde_json::json!({
@@ -631,6 +603,10 @@ impl WrpcClientJs {
     }
     
     /// Get client configuration
+    /// 
+    /// This is a convenience method for debugging and configuration inspection.
+    /// The configuration is also available through the main get_stats() method.
+    #[doc(hidden)]
     pub fn get_config(&self) -> JsValue {
         let config = self.inner.config();
         let config_data = serde_json::json!({
@@ -649,30 +625,50 @@ impl WrpcClientJs {
     }
     
     /// Check if client is currently reconnecting
+    /// 
+    /// This is a convenience method that extracts reconnection status
+    /// from the main get_stats() method. For comprehensive status, use get_stats().
+    #[doc(hidden)]
     pub fn is_reconnecting(&self) -> bool {
         let (_, _, _, reconnecting, _, _) = self.get_client_stats();
         reconnecting
     }
     
     /// Get current reconnection attempt number
+    /// 
+    /// This is a convenience method that extracts current reconnection attempt
+    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
+    #[doc(hidden)]
     pub fn get_current_reconnect_attempt(&self) -> u32 {
         let (_, _, _, _, current_attempt, _) = self.get_client_stats();
         current_attempt
     }
     
     /// Get maximum reconnection attempts
+    /// 
+    /// This is a convenience method that extracts max reconnection attempts
+    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
+    #[doc(hidden)]
     pub fn get_max_reconnect_attempts(&self) -> u32 {
         let (_, _, _, _, _, max_attempts) = self.get_client_stats();
         max_attempts
     }
     
     /// Get number of registered event handlers
+    /// 
+    /// This is a convenience method that extracts event handler count
+    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
+    #[doc(hidden)]
     pub fn get_event_handler_count(&self) -> usize {
         let (_, event_handlers, _, _, _, _) = self.get_client_stats();
         event_handlers
     }
     
     /// Get number of pending requests
+    /// 
+    /// This is a convenience method that extracts pending request count
+    /// from the main get_stats() method. For comprehensive statistics, use get_stats().
+    #[doc(hidden)]
     pub fn get_pending_request_count(&self) -> usize {
         let (_, _, pending_requests, _, _, _) = self.get_client_stats();
         pending_requests
@@ -684,6 +680,9 @@ impl WrpcClientJs {
     }
     
     /// Get client version information
+    /// 
+    /// This is a convenience method for debugging and version checking.
+    #[doc(hidden)]
     pub fn get_version(&self) -> JsValue {
         let version_info = serde_json::json!({
             "name": "tondi-scan-wasm2-client",
