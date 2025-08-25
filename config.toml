@@ -1,0 +1,147 @@
+# Tondi Scan Unified Configuration File
+# This file contains all configuration for the Tondi Scan project
+
+[server]
+host_url = "127.0.0.1:3000"
+grpc_url = "grpc://8.210.45.192:16610"
+database_url = "postgres://postgres:postgres@127.0.0.1/postgres"
+log_level = "info"
+environment = "development"
+
+[server.cors]
+# Example 1: Allow all origins (equivalent to no CORS restrictions)
+# allowed_origins = []  # Empty array means allow all origins
+
+# Example 2: Restrict specific origins
+allowed_origins = ["http://localhost:3000", "http://localhost:8080"]
+
+# Example 3: Allow all methods (equivalent to no CORS restrictions)
+# allowed_methods = []  # Empty array means allow all methods
+
+# Example 4: Restrict specific methods
+allowed_methods = ["GET", "POST", "PUT", "DELETE"]
+
+# Example 5: Allow all headers (equivalent to no CORS restrictions)
+# allowed_headers = []  # Empty array means allow all headers
+
+# Example 6: Restrict specific headers
+allowed_headers = ["Content-Type", "Authorization"]
+
+max_age = 3600
+
+[server.security]
+rate_limit = 100
+max_body_size = 10485760  # 10MB
+
+[server.events]
+# 启用的区块链事件类型
+enabled_events = [
+    "block-added",           # 新块添加 (必需)
+    "utxos-changed",         # UTXO变化 (必需)
+    "virtual-chain-changed", # 虚拟链变化 (推荐)
+    "new-block-template",    # 新区块模板 (可选)
+]
+
+# 事件处理策略
+event_strategy = "real-time"  # 可选: "real-time", "batch", "priority"
+
+# 批量处理配置 (当使用batch策略时)
+[server.events.batch]
+batch_size = 100
+batch_timeout_ms = 100
+
+# Priority processing configuration (when using priority strategy)
+[server.events.priority]
+high_priority = ["block-added", "utxos-changed"]
+medium_priority = ["virtual-chain-changed"]
+low_priority = ["new-block-template"]
+
+# Event processing configuration
+buffer_size = 1000
+enable_deduplication = true
+
+[server.wrpc]
+# wRPC配置 (如果enabled=true，将优先使用wRPC而不是gRPC)
+enabled = true
+
+# wRPC协议类型: "ws", "wss", "grpc"
+protocol = "ws"
+
+# wRPC节点地址
+host = "8.210.45.192"
+
+# wRPC端口 (如果为0，将使用网络类型的默认端口)
+# devnet + borsh = 17610, devnet + json = 18610
+# mainnet + borsh = 17110, mainnet + json = 18110
+# testnet + borsh = 17210, testnet + json = 18210
+port = 0
+
+# 网络类型: "mainnet", "testnet", "devnet", "simnet"
+network = "devnet"
+
+# 编码类型: "borsh", "json"
+encoding = "borsh"
+
+[client]
+# WASM Client Configuration
+# Connection configuration - no hardcoded URL, users must provide via parameter
+# If no URL is provided, it will be automatically computed based on network and encoding type
+
+# Default network type and encoding
+default_network = "devnet"
+default_encoding = "borsh"
+
+# Default host address (if no full URL is provided)
+default_host = "8.210.45.192"
+
+# Default protocol
+default_protocol = "wss"
+
+# Connection timeout settings (milliseconds)
+connection_timeout_ms = 10000
+ping_interval_ms = 30000
+
+# Reconnection settings
+auto_reconnect = true
+max_reconnect_attempts = 5
+reconnect_delay_ms = 1000
+
+# Event subscription settings
+default_events = [
+    "block-added",
+    "utxos-changed", 
+    "virtual-chain-changed",
+    "new-block-template"
+]
+
+# Logging settings
+log_level = "info"
+enable_console_log = true
+
+# Port mapping reference (used for auto-calculation)
+# mainnet + borsh = 17110, mainnet + json = 18110
+# testnet + borsh = 17210, testnet + json = 18210
+# devnet + borsh = 17610, devnet + json = 18610
+# simnet + borsh = 17310, simnet + json = 18310
+
+[database]
+# Database configuration
+url = "postgres://postgres:postgres@127.0.0.1/postgres"
+max_connections = 10
+min_connections = 2
+connection_timeout = 30
+idle_timeout = 300
+
+[logging]
+# Global logging configuration
+level = "info"
+format = "json"  # json, text
+output = "stdout"  # stdout, stderr, file
+file_path = "logs/tondi-scan.log"  # Only used if output = "file"
+
+[monitoring]
+# Monitoring and metrics configuration
+enabled = true
+metrics_port = 9090
+health_check_interval = 30
+prometheus_endpoint = "/metrics"

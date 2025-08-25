@@ -10,9 +10,9 @@ fn main() -> Result<Nil> {
 
     spawn_local(async {
         // 创建新的Tondi Scan客户端
-        // 不再硬编码 URL，使用配置文件的默认值或让用户通过参数提供
+        // 从统一配置文件读取配置，而不是硬编码
         let config = serde_wasm_bindgen::to_value(&serde_json::json!({
-            // "url": "wss://8.210.45.192:18610",  // 已移除硬编码
+            // 配置将从统一配置文件读取，支持环境变量覆盖
             "encoding": "borsh",
             "network_id": "devnet"
             // 如果没有提供 URL，将根据网络类型和编码类型自动计算端口

@@ -6,6 +6,7 @@
 - **不再硬编码 URL**：所有连接信息都通过配置文件或参数提供
 - **自动端口计算**：根据网络类型和编码类型自动计算端口
 - **配置一致性**：与服务器端配置结构保持一致
+- **统一配置文件**：使用工作区根目录的 `config.toml` 文件
 
 ### 2. 端口映射规则
 ```
@@ -64,13 +65,20 @@ const config = {
 const client = new TondiScanClient(config);
 ```
 
-#### 使用配置文件
+#### 使用统一配置文件
+项目使用工作区根目录的 `config.toml` 文件，包含所有配置：
+
 ```toml
 [client]
 default_network = "devnet"
 default_encoding = "borsh"
 default_host = "8.210.45.192"
 default_protocol = "wss"
+connection_timeout_ms = 10000
+ping_interval_ms = 30000
+auto_reconnect = true
+max_reconnect_attempts = 5
+reconnect_delay_ms = 1000
 ```
 
 ### 5. 环境变量支持
@@ -90,3 +98,18 @@ default_protocol = "wss"
 - 配置与服务器端保持一致，避免配置不一致问题
 - 支持环境变量覆盖，便于部署时配置
 - 所有硬编码都已移除，配置完全可定制
+- 使用统一的 `config.toml` 文件，便于管理和维护
+
+### 8. 配置文件结构
+```
+tondi-scan/
+├── config.toml          # 统一配置文件
+├── config.example.toml  # 配置示例文件
+├── env.example          # 环境变量示例
+└── crates/
+    ├── wasm2-client/    # WASM 客户端
+    ├── server/          # 服务器端
+    └── ...
+```
+
+所有配置都集中在根目录的 `config.toml` 文件中，确保配置的一致性和可维护性。

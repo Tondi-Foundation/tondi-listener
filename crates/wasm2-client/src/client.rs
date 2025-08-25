@@ -18,6 +18,62 @@ mod wrpc_ports {
     pub const SIMNET_JSON: u16 = 18310;
 }
 
+/// 统一配置文件结构
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct UnifiedConfig {
+    #[serde(default)]
+    client: ClientConfig,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+struct ClientConfig {
+    #[serde(default = "default_network")]
+    default_network: String,
+    #[serde(default = "default_encoding")]
+    default_encoding: String,
+    #[serde(default = "default_host")]
+    default_host: String,
+    #[serde(default = "default_protocol")]
+    default_protocol: String,
+    #[serde(default = "default_connection_timeout")]
+    connection_timeout_ms: u64,
+    #[serde(default = "default_ping_interval")]
+    ping_interval_ms: u64,
+    #[serde(default = "default_auto_reconnect")]
+    auto_reconnect: bool,
+    #[serde(default = "default_max_reconnect_attempts")]
+    max_reconnect_attempts: u32,
+    #[serde(default = "default_reconnect_delay")]
+    reconnect_delay_ms: u64,
+    #[serde(default = "default_events")]
+    default_events: Vec<String>,
+    #[serde(default = "default_log_level")]
+    log_level: String,
+    #[serde(default = "default_enable_console_log")]
+    enable_console_log: bool,
+}
+
+// Default value functions
+fn default_network() -> String { "devnet".to_string() }
+fn default_encoding() -> String { "borsh".to_string() }
+fn default_host() -> String { "8.210.45.192".to_string() }
+fn default_protocol() -> String { "wss".to_string() }
+fn default_connection_timeout() -> u64 { 10000 }
+fn default_ping_interval() -> u64 { 30000 }
+fn default_auto_reconnect() -> bool { true }
+fn default_max_reconnect_attempts() -> u32 { 5 }
+fn default_reconnect_delay() -> u64 { 1000 }
+fn default_log_level() -> String { "info".to_string() }
+fn default_enable_console_log() -> bool { true }
+fn default_events() -> Vec<String> {
+    vec![
+        "block-added".to_string(),
+        "utxos-changed".to_string(),
+        "virtual-chain-changed".to_string(),
+        "new-block-template".to_string(),
+    ]
+}
+
 /// Tondi Scan WASM Client Configuration
 /// 
 /// 配置说明：
@@ -30,6 +86,7 @@ mod wrpc_ports {
 ///    - simnet + borsh = 17310, simnet + json = 18310
 /// 4. 支持环境变量覆盖配置
 /// 5. 与服务器端配置结构保持一致，避免配置不一致问题
+/// 6. 从统一的 config.toml 文件读取配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TondiScanConfig {
     pub url: Option<String>,
@@ -73,7 +130,7 @@ impl Default for TondiScanConfig {
 }
 
 impl TondiScanConfig {
-    /// Calculate the default port based on the network type and encoding type
+    /// 根据网络类型和编码类型计算默认端口
     pub fn get_default_port(&self) -> u16 {
         let network = self.network_id.as_deref().unwrap_or("devnet");
         let encoding = self.encoding.as_deref().unwrap_or("borsh");
@@ -87,16 +144,16 @@ impl TondiScanConfig {
             ("devnet", "json") => wrpc_ports::DEVNET_JSON,
             ("simnet", "borsh") => wrpc_ports::SIMNET_BORSH,
             ("simnet", "json") => wrpc_ports::SIMNET_JSON,
-            _ => wrpc_ports::DEVNET_BORSH, // By default, use devnet + borsh
+            _ => wrpc_ports::DEVNET_BORSH, // 默认使用 devnet + borsh
         }
     }
     
-    /// Build the complete URL
+    /// 构建完整的 URL
     pub fn build_url(&self) -> String {
         if let Some(url) = &self.url {
             url.clone()
         } else {
-            // If no URL is provided, use the configuration to build
+            // 如果没有提供 URL，使用配置构建
             let protocol = self.protocol.as_deref().unwrap_or("wss");
             let host = self.host.as_deref().unwrap_or("8.210.45.192");
             let port = self.get_default_port();
@@ -104,11 +161,23 @@ impl TondiScanConfig {
         }
     }
     
-    /// Load configuration from a file
+    /// 从统一配置文件创建配置
     pub fn from_config_file() -> Result<Self, String> {
-        // Here you can implement the logic to read from the configuration file
-        // For now, return the default configuration
+        // 由于这是 WASM 项目，我们暂时返回默认配置
+        // TODO: 实现从配置文件读取的逻辑，可能需要通过 JavaScript 传入配置
         Ok(Self::default())
+    }
+    
+    /// 从 JSON 字符串创建配置
+    pub fn from_json(json_str: &str) -> Result<Self, String> {
+        serde_json::from_str(json_str)
+            .map_err(|e| format!("Failed to parse JSON config: {}", e))
+    }
+    
+    /// 从 JavaScript 对象创建配置
+    pub fn from_js_value(js_value: JsValue) -> Result<Self, String> {
+        serde_wasm_bindgen::from_value(js_value)
+            .map_err(|e| format!("Failed to parse JS config: {}", e))
     }
 }
 
