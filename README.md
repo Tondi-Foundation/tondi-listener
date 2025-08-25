@@ -83,6 +83,9 @@ The configuration system follows this priority order (highest to lowest):
 | `TONDI_SCAN_BATCH_TIMEOUT_MS` | Batch timeout in milliseconds         | `100`                                     |
 | `TONDI_SCAN_BUFFER_SIZE`    | Event buffer size                      | `1000`                                    |
 | `TONDI_SCAN_ENABLE_DEDUPLICATION` | Enable event deduplication           | `true`                                    |
+| `TONDI_SCAN_HIGH_PRIORITY_EVENTS` | High priority events (comma-separated) | `block-added,utxos-changed`               |
+| `TONDI_SCAN_MEDIUM_PRIORITY_EVENTS` | Medium priority events (comma-separated) | `virtual-chain-changed`                   |
+| `TONDI_SCAN_LOW_PRIORITY_EVENTS` | Low priority events (comma-separated) | `new-block-template`                      |
 
 ### CORS Configuration
 

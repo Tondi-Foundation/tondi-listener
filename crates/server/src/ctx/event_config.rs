@@ -72,14 +72,14 @@ pub struct EventConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EventStrategy {
-    /// 实时处理所有事件
+    /// Process all events in real-time
     RealTime,
-    /// 批量处理，减少数据库写入
+    /// Process events in batches to reduce database writes
     Batch {
         batch_size: usize,
         batch_timeout_ms: u64,
     },
-    /// 优先级处理，重要事件优先
+    /// Process events by priority (high, medium, low)
     Priority {
         high_priority: Vec<String>,
         medium_priority: Vec<String>,
@@ -110,7 +110,7 @@ fn default_deduplication() -> bool {
 }
 
 impl EventConfig {
-    /// 解析配置的事件类型字符串为EventType枚举
+    /// Parse configured event type strings into EventType enums
     pub fn parse_event_types(&self) -> Result<HashSet<EventType>, String> {
         let mut event_types = HashSet::new();
         
@@ -123,12 +123,12 @@ impl EventConfig {
         Ok(event_types)
     }
     
-    /// 验证配置是否有效
+    /// Validate configuration
     pub fn validate(&self) -> Result<(), String> {
-        // 检查事件类型是否有效
+        // Check if event types are valid
         self.parse_event_types()?;
         
-        // 检查批量处理配置
+        // Check batch processing configuration
         if let EventStrategy::Batch { batch_size, batch_timeout_ms } = &self.event_strategy {
             if *batch_size == 0 {
                 return Err("Batch size must be greater than 0".to_string());
@@ -138,7 +138,7 @@ impl EventConfig {
             }
         }
         
-        // 检查优先级配置
+        // Check priority configuration
         if let EventStrategy::Priority { high_priority, medium_priority, low_priority } = &self.event_strategy {
             let all_events: HashSet<_> = high_priority.iter()
                 .chain(medium_priority.iter())
@@ -154,7 +154,7 @@ impl EventConfig {
         Ok(())
     }
     
-    /// 获取所有配置的事件类型
+    /// Get all available event types
     pub fn get_all_event_types() -> Vec<EventType> {
         vec![
             EventType::BlockAdded,

@@ -49,12 +49,12 @@ event_strategy = "real-time"  # 可选: "real-time", "batch", "priority"
 batch_size = 100
 batch_timeout_ms = 100
 
-# 优先级处理配置 (当使用priority策略时)
+# Priority processing configuration (when using priority strategy)
 [server.events.priority]
 high_priority = ["block-added", "utxos-changed"]
 medium_priority = ["virtual-chain-changed"]
 low_priority = ["new-block-template"]
 
-# 事件处理配置
+# Event processing configuration
 buffer_size = 1000
 enable_deduplication = true
