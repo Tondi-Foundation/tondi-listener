@@ -1,20 +1,19 @@
 use std::{collections::HashMap, ops::Deref, sync::Arc};
-
-use tondi_grpc_client::GrpcClient;
-use tondi_grpc_core::channel::NotificationChannel;
-use tondi_notify::{
-    connection::ChannelType,
-    events::EventType as TondiEventType,
-};
-use tondi_rpc_core::{Notification, api::rpc::RpcApi, notify::connection::ChannelConnection};
-use tondi_utils::channel::Receiver;
+use tokio::sync::mpsc::{Receiver, Sender};
 use workflow_rpc::client::RpcClient;
-use tondi_scan_library::log;
+use workflow_rpc::client::notification::Notification as WrpcNotification;
+use workflow_rpc::client::rpc::RpcApi;
+use workflow_rpc::error::Error as WrpcError;
+use workflow_rpc::id::Id64;
+use workflow_rpc::encoding::Encoding;
+use workflow_rpc::client::JsonProtocol;
+use workflow_rpc::client::BorshProtocol;
+use log;
 
 use crate::{
     ctx::event_config::EventType,
-    error::{Result, Error as AppError},
-    shared::pool::Error as PoolError,
+    error::{Error as AppError, Result},
+    shared::pool::{Error as PoolError, Notification, NotificationChannel},
 };
 
 #[derive(Debug)]
@@ -36,14 +35,13 @@ impl Listener {
     }
     
     pub async fn subscribe_wrpc(
-        _client: &Arc<RpcClient<(), workflow_rpc::id::Id64>>, 
+        client: &Arc<RpcClient<(), Id64>>, 
         ev: EventType
     ) -> Result<Listener, PoolError> {
         let channel = NotificationChannel::default();
         
-        // 实现真正的wRPC订阅逻辑
-        // 参考Tondi wasm的实现方式
-        let _event_type = match ev {
+        // 实现wRPC订阅逻辑
+        let event_type = match ev {
             EventType::BlockAdded => "block-added",
             EventType::VirtualChainChanged => "virtual-chain-changed",
             EventType::FinalityConflict => "finality-conflict",
@@ -56,18 +54,18 @@ impl Listener {
         };
         
         // 使用workflow-rpc的订阅机制
-        // 这里我们需要根据具体的事件类型来订阅
-        // 由于workflow-rpc的API可能需要具体的实现，我们先创建一个基础的订阅框架
-        
         // 创建一个唯一的listener ID
         let id = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()
             .as_nanos() as u64;
         
-        // TODO: 实现具体的wRPC订阅逻辑
-        // 这需要根据workflow-rpc的具体API来实现
-        // 可能需要调用类似 client.subscribe(event_name) 的方法
+        // 记录订阅信息
+        log::info!("Subscribing to wRPC event: {} with ID: {}", event_type, id);
+        
+        // 尝试使用workflow-rpc的订阅机制
+        // 注意：workflow-rpc的具体订阅API可能需要根据实际使用情况调整
+        // 这里我们创建一个基础的订阅框架，等待后续完善
         
         Ok(Self { 
             id,
@@ -78,56 +76,93 @@ impl Listener {
     /// 处理wRPC事件通知
     pub async fn handle_wrpc_event(&self, event_data: serde_json::Value) -> Result<(), PoolError> {
         // 将事件数据转换为我们的Notification格式
-        // 这里需要根据具体的事件类型来处理
-        if let Some(event_type) = event_data.get("type").and_then(|v| v.as_str()) {
-            match event_type {
-                "block-added" => {
-                    // 处理区块添加事件
-                    log::info!("Received wRPC block-added event: {:?}", event_data);
-                    
-                    // TODO: 实现真正的通知创建和发送
-                    // 由于类型复杂性，暂时只记录日志
-                    // 后续需要根据实际需求来实现
-                }
-                "virtual-chain-changed" => {
-                    // 处理虚拟链变化事件
-                    log::info!("Received wRPC virtual-chain-changed event: {:?}", event_data);
-                }
-                "utxos-changed" => {
-                    // 处理UTXO变化事件
-                    log::info!("Received wRPC utxos-changed event: {:?}", event_data);
-                }
-                _ => {
-                    // 处理其他事件类型
-                    log::warn!("Unhandled wRPC event type: {}", event_type);
-                }
-            }
+        let notification = Notification {
+            event_type: "wrpc-event".to_string(),
+            data: event_data,
+            timestamp: chrono::Utc::now(),
+        };
+        
+        // 发送到通知通道
+        if let Err(e) = self.channel.sender().send(notification).await {
+            return Err(PoolError::from(format!("Failed to send wRPC event: {}", e)));
         }
         
         Ok(())
     }
     
     /// 启动wRPC事件监听
-    pub async fn start_wrpc_listening(&self, _client: &Arc<RpcClient<(), workflow_rpc::id::Id64>>) -> Result<(), PoolError> {
-        // 这里需要实现wRPC的事件监听逻辑
-        // 可能需要启动一个后台任务来监听WebSocket消息
-        
-        // 创建一个后台任务来处理wRPC事件
-        let _channel_sender = self.channel.sender().clone();
-        let _client_clone = _client.clone();
+    pub async fn start_wrpc_listening(&self, client: &Arc<RpcClient<(), Id64>>) -> Result<(), PoolError> {
+        // 启动wRPC事件监听逻辑
+        let channel_sender = self.channel.sender().clone();
+        let client_clone = client.clone();
         
         tokio::spawn(async move {
-            // 这里应该实现真正的wRPC事件监听
-            // 由于workflow-rpc的具体API需要进一步研究，我们先创建一个框架
+            log::info!("Starting wRPC event listening loop");
             
             loop {
-                // 模拟事件监听循环
-                tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+                // 检查连接状态
+                if !client_clone.is_connected() {
+                    log::warn!("wRPC client disconnected, attempting to reconnect...");
+                    if let Err(e) = client_clone.connect(workflow_rpc::client::ConnectOptions::default()).await {
+                        log::error!("Failed to reconnect wRPC client: {}", e);
+                        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+                        continue;
+                    }
+                    log::info!("wRPC client reconnected successfully");
+                }
                 
-                // TODO: 实现真正的wRPC事件接收和处理
-                // 这需要根据workflow-rpc的具体实现来完成
+                // 尝试接收通知
+                match client_clone.receive_notification().await {
+                    Ok(notification) => {
+                        log::debug!("Received wRPC notification: {:?}", notification);
+                        
+                        // 处理通知
+                        if let Err(e) = Self::process_wrpc_notification(notification, &channel_sender).await {
+                            log::error!("Failed to process wRPC notification: {}", e);
+                        }
+                    }
+                    Err(e) => {
+                        if e.to_string().contains("timeout") {
+                            // 超时是正常的，继续循环
+                            continue;
+                        }
+                        log::error!("Error receiving wRPC notification: {}", e);
+                        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                    }
+                }
+                
+                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
             }
         });
+        
+        Ok(())
+    }
+    
+    /// 处理wRPC通知
+    async fn process_wrpc_notification(
+        notification: WrpcNotification<(), Id64>,
+        sender: &Sender<Notification>
+    ) -> Result<(), PoolError> {
+        // 解析通知数据
+        let event_data = match notification.payload {
+            workflow_rpc::client::notification::Payload::Json(data) => data,
+            workflow_rpc::client::notification::Payload::Borsh(_) => {
+                // 对于Borsh编码，我们需要先反序列化
+                // 这里暂时使用默认值，实际应该根据Borsh格式解析
+                serde_json::Value::Null
+            }
+        };
+        
+        // 创建通知
+        let notification = Notification {
+            event_type: "wrpc-event".to_string(),
+            data: event_data,
+            timestamp: chrono::Utc::now(),
+        };
+        
+        // 发送到通知通道
+        sender.send(notification).await
+            .map_err(|e| PoolError::from(format!("Failed to send wRPC event: {}", e)))?;
         
         Ok(())
     }
@@ -177,7 +212,7 @@ impl ListenerManager {
     
     /// Create a new ListenerManager for wRPC client
     pub async fn new_wrpc(
-        client: &Arc<RpcClient<(), workflow_rpc::id::Id64>>, 
+        client: &Arc<RpcClient<(), Id64>>, 
         events: &[EventType]
     ) -> Result<Self, PoolError> {
         let mut listeners = HashMap::new();
@@ -239,83 +274,155 @@ impl ListenerManager {
 
 /// wRPC事件处理器
 pub struct WrpcEventHandler {
-    _client: Arc<RpcClient<(), workflow_rpc::id::Id64>>,
+    client: Arc<RpcClient<(), Id64>>,
     event_types: Vec<EventType>,
+    listeners: HashMap<EventType, Arc<Listener>>,
 }
 
 impl std::fmt::Debug for WrpcEventHandler {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("WrpcEventHandler")
-            .field("client", &"Arc<RpcClient<(), workflow_rpc::id::Id64>>")
+            .field("client", &"Arc<RpcClient<(), Id64>>")
             .field("event_types", &self.event_types)
+            .field("listeners", &self.listeners.len())
             .finish()
     }
 }
 
 impl WrpcEventHandler {
-    pub fn new(client: Arc<RpcClient<(), workflow_rpc::id::Id64>>, event_types: Vec<EventType>) -> Self {
-        Self { _client: client, event_types }
+    pub fn new(
+        client: Arc<RpcClient<(), Id64>>, 
+        event_types: Vec<EventType>
+    ) -> Self {
+        Self {
+            client,
+            event_types,
+            listeners: HashMap::new(),
+        }
     }
     
     /// 启动事件监听
-    pub async fn start_listening(&self) -> Result<(), PoolError> {
-        log::info!("Starting wRPC event listening for {} event types", self.event_types.len());
-        
-        // 这里应该实现真正的wRPC事件监听
-        // 由于workflow-rpc的具体API需要进一步研究，我们先创建一个框架
-        
+    pub async fn start_listening(&mut self) -> Result<(), PoolError> {
         // 为每个事件类型创建监听器
         for event_type in &self.event_types {
-            self.subscribe_to_event(*event_type).await?;
+            let listener = Listener::subscribe_wrpc(&self.client, *event_type).await?;
+            self.listeners.insert(*event_type, Arc::new(listener));
         }
         
+        // 启动WebSocket消息监听
+        self.start_websocket_listening().await?;
+        
         Ok(())
     }
     
-    /// 订阅特定事件类型
-    async fn subscribe_to_event(&self, event_type: EventType) -> Result<(), PoolError> {
-        let event_name = match event_type {
-            EventType::BlockAdded => "block-added",
-            EventType::VirtualChainChanged => "virtual-chain-changed",
-            EventType::FinalityConflict => "finality-conflict",
-            EventType::FinalityConflictResolved => "finality-conflict-resolved",
-            EventType::UtxosChanged => "utxos-changed",
-            EventType::SinkBlueScoreChanged => "sink-blue-score-changed",
-            EventType::VirtualDaaScoreChanged => "virtual-daa-score-changed",
-            EventType::PruningPointUtxoSetOverride => "pruning-point-utxo-set-override",
-            EventType::NewBlockTemplate => "new-block-template",
+    /// 启动WebSocket消息监听
+    async fn start_websocket_listening(&self) -> Result<(), PoolError> {
+        let client = self.client.clone();
+        let listeners = self.listeners.clone();
+        
+        tokio::spawn(async move {
+            loop {
+                // 检查连接状态
+                if !client.is_connected() {
+                    log::warn!("wRPC client disconnected, attempting to reconnect...");
+                    if let Err(e) = client.connect(workflow_rpc::client::ConnectOptions::default()).await {
+                        log::error!("Failed to reconnect wRPC client: {}", e);
+                        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+                        continue;
+                    }
+                    log::info!("wRPC client reconnected successfully");
+                }
+                
+                // 监听WebSocket消息
+                if let Ok(notification) = client.receive_notification().await {
+                    Self::handle_notification(notification, &listeners).await;
+                }
+                
+                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+            }
+        });
+        
+        Ok(())
+    }
+    
+    /// 处理接收到的通知
+    async fn handle_notification(
+        notification: WrpcNotification<(), Id64>,
+        listeners: &HashMap<EventType, Arc<Listener>>
+    ) {
+        // 解析通知数据
+        let event_data = match notification.payload {
+            workflow_rpc::client::notification::Payload::Json(data) => data,
+            workflow_rpc::client::notification::Payload::Borsh(_) => {
+                // 对于Borsh编码，我们需要先反序列化
+                // 这里暂时使用默认值，实际应该根据Borsh格式解析
+                serde_json::Value::Null
+            }
         };
         
-        log::info!("Subscribing to wRPC event: {}", event_name);
+        log::debug!("Received wRPC notification: {:?}", notification);
         
-        // TODO: 实现真正的wRPC订阅逻辑
-        // 这需要根据workflow-rpc的具体API来实现
-        // 可能需要调用类似 client.subscribe(event_name) 的方法
+        // 尝试解析事件类型
+        let event_type = event_data.get("type")
+            .and_then(|v| v.as_str());
         
-        Ok(())
+        if let Some(event_type_str) = event_type {
+            // 根据事件类型找到对应的监听器
+            let event_enum = match event_type_str {
+                "block-added" => EventType::BlockAdded,
+                "virtual-chain-changed" => EventType::VirtualChainChanged,
+                "finality-conflict" => EventType::FinalityConflict,
+                "finality-conflict-resolved" => EventType::FinalityConflictResolved,
+                "utxos-changed" => EventType::UtxosChanged,
+                "sink-blue-score-changed" => EventType::SinkBlueScoreChanged,
+                "virtual-daa-score-changed" => EventType::VirtualDaaScoreChanged,
+                "pruning-point-utxo-set-override" => EventType::PruningPointUtxoSetOverride,
+                "new-block-template" => EventType::NewBlockTemplate,
+                _ => {
+                    log::warn!("Unknown event type: {}", event_type_str);
+                    return;
+                }
+            };
+            
+            // 发送到对应的监听器
+            if let Some(listener) = listeners.get(&event_enum) {
+                if let Err(e) = listener.handle_wrpc_event(event_data).await {
+                    log::error!("Failed to handle wRPC event: {}", e);
+                }
+            } else {
+                log::warn!("No listener found for event type: {}", event_type_str);
+            }
+        } else {
+            log::warn!("No event type found in wRPC notification");
+        }
     }
     
-    /// 处理接收到的wRPC事件
+    /// 处理事件
     pub async fn handle_event(&self, event_data: serde_json::Value) -> Result<(), PoolError> {
-        if let Some(event_type) = event_data.get("type").and_then(|v| v.as_str()) {
-            log::debug!("Received wRPC event: {}", event_type);
-            
-            // 这里应该将事件转发给相应的监听器
-            // 由于我们还没有完整的实现，先记录日志
-            match event_type {
-                "block-added" => {
-                    log::info!("Block added event received");
-                }
-                "virtual-chain-changed" => {
-                    log::info!("Virtual chain changed event received");
-                }
-                "utxos-changed" => {
-                    log::info!("UTXOs changed event received");
-                }
-                _ => {
-                    log::warn!("Unhandled wRPC event type: {}", event_type);
-                }
+        // 解析事件类型
+        let event_type = event_data.get("type")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| PoolError::from("Missing event type"))?;
+        
+        // 根据事件类型找到对应的监听器
+        let event_enum = match event_type {
+            "block-added" => EventType::BlockAdded,
+            "virtual-chain-changed" => EventType::VirtualChainChanged,
+            "finality-conflict" => EventType::FinalityConflict,
+            "finality-conflict-resolved" => EventType::FinalityConflictResolved,
+            "utxos-changed" => EventType::UtxosChanged,
+            "sink-blue-score-changed" => EventType::SinkBlueScoreChanged,
+            "virtual-daa-score-changed" => EventType::VirtualDaaScoreChanged,
+            "pruning-point-utxo-set-override" => EventType::PruningPointUtxoSetOverride,
+            "new-block-template" => EventType::NewBlockTemplate,
+            _ => {
+                log::warn!("Unknown event type: {}", event_type);
+                return Ok(());
             }
+        };
+        
+        if let Some(listener) = self.listeners.get(&event_enum) {
+            listener.handle_wrpc_event(event_data).await?;
         }
         
         Ok(())

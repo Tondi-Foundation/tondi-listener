@@ -4320,9 +4320,12 @@ dependencies = [
  "console_error_panic_hook",
  "futures",
  "gloo",
+ "js-sys",
+ "log",
  "nill",
  "serde",
  "serde-wasm-bindgen",
+ "serde_json",
  "thiserror 2.0.16",
  "tondi-scan-http2-client",
  "tondi-scan-library",
@@ -4330,6 +4333,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "wasm-streams",
  "web-sys",
+ "workflow-rpc",
 ]
 
 [[package]]
