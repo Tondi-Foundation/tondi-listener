@@ -165,7 +165,7 @@ current = "development"  # development, testing, production
 config_path = "config.toml"  # 可以是 config.dev.toml, config.test.toml, config.main.toml
 
 # 环境变量前缀
-env_prefix = "TONDI_SCAN"
+env_prefix = "TONDI_LISTENER"
 
 # 配置热重载
 hot_reload = false

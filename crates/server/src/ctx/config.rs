@@ -205,28 +205,28 @@ impl Config {
         let mut config = Self::default();
         
         // Load config from environment variables
-        if let Ok(host_url) = env::var("TONDI_SCAN_HOST_URL") {
+        if let Ok(host_url) = env::var("TONDI_LISTENER_HOST_URL") {
             config.host_url = host_url;
         }
         
-        if let Ok(grpc_url) = env::var("TONDI_SCAN_GRPC_URL") {
+        if let Ok(grpc_url) = env::var("TONDI_LISTENER_GRPC_URL") {
             config.grpc_url = grpc_url;
         }
         
-        if let Ok(database_url) = env::var("TONDI_SCAN_DATABASE_URL") {
+        if let Ok(database_url) = env::var("TONDI_LISTENER_DATABASE_URL") {
             config.database_url = database_url;
         }
         
-        if let Ok(log_level) = env::var("TONDI_SCAN_LOG_LEVEL") {
+        if let Ok(log_level) = env::var("TONDI_LISTENER_LOG_LEVEL") {
             config.log_level = log_level;
         }
         
-        if let Ok(environment) = env::var("TONDI_SCAN_ENVIRONMENT") {
+        if let Ok(environment) = env::var("TONDI_LISTENER_ENVIRONMENT") {
             config.environment = environment;
         }
         
         // Load CORS configuration from environment variables
-        if let Ok(allowed_origins) = env::var("TONDI_SCAN_CORS_ALLOWED_ORIGINS") {
+        if let Ok(allowed_origins) = env::var("TONDI_LISTENER_CORS_ALLOWED_ORIGINS") {
             if allowed_origins == "*" || allowed_origins.is_empty() {
                 // If set to "*" or empty, allow all origins
                 config.cors.allowed_origins = vec![];
@@ -239,7 +239,7 @@ impl Config {
             }
         }
         
-        if let Ok(allowed_methods) = env::var("TONDI_SCAN_CORS_ALLOWED_METHODS") {
+        if let Ok(allowed_methods) = env::var("TONDI_LISTENER_CORS_ALLOWED_METHODS") {
             if allowed_methods == "*" || allowed_methods.is_empty() {
                 // If set to "*" or empty, allow all methods
                 config.cors.allowed_methods = vec![];
@@ -252,7 +252,7 @@ impl Config {
             }
         }
         
-        if let Ok(allowed_headers) = env::var("TONDI_SCAN_CORS_ALLOWED_HEADERS") {
+        if let Ok(allowed_headers) = env::var("TONDI_LISTENER_CORS_ALLOWED_HEADERS") {
             if allowed_headers == "*" || allowed_headers.is_empty() {
                 // If set to "*" or empty, allow all headers
                 config.cors.allowed_headers = vec![];
@@ -265,27 +265,27 @@ impl Config {
             }
         }
         
-        if let Ok(max_age) = env::var("TONDI_SCAN_CORS_MAX_AGE") {
+        if let Ok(max_age) = env::var("TONDI_LISTENER_CORS_MAX_AGE") {
             if let Ok(age) = max_age.parse() {
                 config.cors.max_age = age;
             }
         }
         
         // Load security configuration from environment variables
-        if let Ok(rate_limit) = env::var("TONDI_SCAN_RATE_LIMIT") {
+        if let Ok(rate_limit) = env::var("TONDI_LISTENER_RATE_LIMIT") {
             if let Ok(limit) = rate_limit.parse() {
                 config.security.rate_limit = limit;
             }
         }
         
-        if let Ok(max_body_size) = env::var("TONDI_SCAN_MAX_BODY_SIZE") {
+        if let Ok(max_body_size) = env::var("TONDI_LISTENER_MAX_BODY_SIZE") {
             if let Ok(size) = max_body_size.parse() {
                 config.security.max_body_size = size;
             }
         }
         
         // Load event configuration from environment variables
-        if let Ok(enabled_events) = env::var("TONDI_SCAN_ENABLED_EVENTS") {
+        if let Ok(enabled_events) = env::var("TONDI_LISTENER_ENABLED_EVENTS") {
             config.events.enabled_events = enabled_events
                 .split(',')
                 .map(|s| s.trim().to_string())
@@ -293,33 +293,33 @@ impl Config {
                 .collect();
         }
         
-        if let Ok(event_strategy) = env::var("TONDI_SCAN_EVENT_STRATEGY") {
+        if let Ok(event_strategy) = env::var("TONDI_LISTENER_EVENT_STRATEGY") {
             config.events.event_strategy = match event_strategy.as_str() {
                 "batch" => {
-                    let batch_size = env::var("TONDI_SCAN_BATCH_SIZE")
+                    let batch_size = env::var("TONDI_LISTENER_BATCH_SIZE")
                         .unwrap_or_else(|_| "100".to_string())
                         .parse()
                         .unwrap_or(100);
-                    let batch_timeout_ms = env::var("TONDI_SCAN_BATCH_TIMEOUT_MS")
+                    let batch_timeout_ms = env::var("TONDI_LISTENER_BATCH_TIMEOUT_MS")
                         .unwrap_or_else(|_| "100".to_string())
                         .parse()
                         .unwrap_or(100);
                     EventStrategy::Batch { batch_size, batch_timeout_ms }
                 }
                 "priority" => {
-                    let high_priority = env::var("TONDI_SCAN_HIGH_PRIORITY_EVENTS")
+                    let high_priority = env::var("TONDI_LISTENER_HIGH_PRIORITY_EVENTS")
                         .unwrap_or_else(|_| "block-added,utxos-changed".to_string())
                         .split(',')
                         .map(|s| s.trim().to_string())
                         .filter(|s| !s.is_empty())
                         .collect();
-                    let medium_priority = env::var("TONDI_SCAN_MEDIUM_PRIORITY_EVENTS")
+                    let medium_priority = env::var("TONDI_LISTENER_MEDIUM_PRIORITY_EVENTS")
                         .unwrap_or_else(|_| "virtual-chain-changed".to_string())
                         .split(',')
                         .map(|s| s.trim().to_string())
                         .filter(|s| !s.is_empty())
                         .collect();
-                    let low_priority = env::var("TONDI_SCAN_LOW_PRIORITY_EVENTS")
+                    let low_priority = env::var("TONDI_LISTENER_LOW_PRIORITY_EVENTS")
                         .unwrap_or_else(|_| "new-block-template".to_string())
                         .split(',')
                         .map(|s| s.trim().to_string())
@@ -331,40 +331,40 @@ impl Config {
             };
         }
         
-        if let Ok(buffer_size) = env::var("TONDI_SCAN_BUFFER_SIZE") {
+        if let Ok(buffer_size) = env::var("TONDI_LISTENER_BUFFER_SIZE") {
             if let Ok(size) = buffer_size.parse() {
                 config.events.buffer_size = size;
             }
         }
         
-        if let Ok(enable_deduplication) = env::var("TONDI_SCAN_ENABLE_DEDUPLICATION") {
+        if let Ok(enable_deduplication) = env::var("TONDI_LISTENER_ENABLE_DEDUPLICATION") {
             config.events.enable_deduplication = enable_deduplication.parse().unwrap_or(true);
         }
         
         // Load wRPC configuration from environment variables
-        if let Ok(protocol) = env::var("TONDI_SCAN_WRPC_PROTOCOL") {
+        if let Ok(protocol) = env::var("TONDI_LISTENER_WRPC_PROTOCOL") {
             config.wrpc.protocol = protocol;
         }
         
-        if let Ok(host) = env::var("TONDI_SCAN_WRPC_HOST") {
+        if let Ok(host) = env::var("TONDI_LISTENER_WRPC_HOST") {
             config.wrpc.host = host;
         }
         
-        if let Ok(port) = env::var("TONDI_SCAN_WRPC_PORT") {
+        if let Ok(port) = env::var("TONDI_LISTENER_WRPC_PORT") {
             if let Ok(port_num) = port.parse() {
                 config.wrpc.port = port_num;
             }
         }
         
-        if let Ok(network) = env::var("TONDI_SCAN_WRPC_NETWORK") {
+        if let Ok(network) = env::var("TONDI_LISTENER_WRPC_NETWORK") {
             config.wrpc.network = network;
         }
         
-        if let Ok(encoding) = env::var("TONDI_SCAN_WRPC_ENCODING") {
+        if let Ok(encoding) = env::var("TONDI_LISTENER_WRPC_ENCODING") {
             config.wrpc.encoding = encoding;
         }
         
-        if let Ok(enabled) = env::var("TONDI_SCAN_WRPC_ENABLED") {
+        if let Ok(enabled) = env::var("TONDI_LISTENER_WRPC_ENABLED") {
             config.wrpc.enabled = enabled.parse().unwrap_or(false);
         }
         

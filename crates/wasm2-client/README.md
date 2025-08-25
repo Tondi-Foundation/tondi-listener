@@ -83,10 +83,10 @@ reconnect_delay_ms = 1000
 
 ### 5. 环境变量支持
 支持通过环境变量覆盖配置：
-- `TONDI_SCAN_WRPC_HOST`: wRPC 主机地址
-- `TONDI_SCAN_WRPC_NETWORK`: 网络类型
-- `TONDI_SCAN_WRPC_ENCODING`: 编码类型
-- `TONDI_SCAN_WRPC_PROTOCOL`: 协议类型
+- `TONDI_LISTENER_WRPC_HOST`: wRPC 主机地址
+- `TONDI_LISTENER_WRPC_NETWORK`: 网络类型
+- `TONDI_LISTENER_WRPC_ENCODING`: 编码类型
+- `TONDI_LISTENER_WRPC_PROTOCOL`: 协议类型
 
 ### 6. 配置验证
 - 自动验证网络类型和编码类型
